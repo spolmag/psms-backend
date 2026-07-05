@@ -1,0 +1,27 @@
+### Register new school
+
+POST http://localhost:5000/api/schools
+Content-Type: application/json
+
+{
+  "schoolName": {
+    "th": "โรงเรียนดนตรีสยามป๊อป",
+    "en": "Siam Pop Music Academy"
+  },
+  "schoolType": "music",
+  "email": "contact@siampopmusic.com",
+  "phoneNumber": "+6629998888",
+  "address": {
+    "th": "456 ถ.พหลโยธิน แขวงจตุจักร เขตจตุจักร กรุงเทพฯ 10900",
+    "en": "456 Phahonyothin Rd, Chatuchak, Bangkok 10900"
+  },
+  "settings": {
+    "currency": "THB",
+    "timeZone": "Asia/Bangkok",
+    "isVatEnabled": true,
+    "vatRate": 7
+  }
+}
+
+### Get school by ID
+GET http://localhost:5000/api/schools/6a4684d8bbe327f841fbdcd3

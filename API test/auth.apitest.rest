@@ -1,0 +1,27 @@
+### 1. Register a New User Account (Multi-Branch Ready)
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a4684d8bbe327f841fbdcd3", 
+  "name": {
+    "th": "ครูสมศรี มีฝีมือ",
+    "en": "Teacher Somsri Meefimue"
+  },
+  "email": "somsri@school.com",
+  "password": "password123",
+  "role": "teacher",
+  "phoneNumber": "0898765432",
+  "extraData": {
+    "instrumentsCanTeach": ["Piano", "Violin"]
+  }
+}
+
+### 2. Login with the New Credentials
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "somsri@school.com",
+  "password": "password123"
+}

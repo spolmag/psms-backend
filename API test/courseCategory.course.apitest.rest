@@ -1,0 +1,65 @@
+### User login to get token
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "somsri@school.com",
+  "password": "password123"
+}
+
+### Create course category
+POST http://localhost:5000/api/coursecategory
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzI2MTMxOH0.3Uq8gOUmbqzl_JJi7WT_CaQ0Apj6gUC-520wxAts7pc
+
+{
+    "name":{
+        "th": "กีตาร์",
+        "en": "Guitar"
+    },
+    "description":{
+        "th": "หลักสูตรวิชากีตาร์",
+        "en": "Guitar course"
+    }
+}
+
+### Register classic guitar course
+POST http://localhost:5000/api/courses
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzI2MTMxOH0.3Uq8gOUmbqzl_JJi7WT_CaQ0Apj6gUC-520wxAts7pc
+
+{
+    "courseCategoryId": "6a4a6db34b3ba514cc08c1ee",
+    "title":{
+        "th": "กีตาร์คลาสสิค",
+        "en": "Classical guitar"
+    },
+    "basePrice": 2500,
+    "durationInMinutes": 60,
+    "lessonType": "private"
+}
+
+### Register group course
+POST http://localhost:5000/api/courses
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzE4MDM3NX0.54CVeu4Tz8ESJVqCm4g-L0jvqysD5VxbOdknZw58Av8
+
+{
+    "courseCategoryId":,
+    "title": {
+        "th": "ดนตรีสำหรับเด็กเล็ก",
+        "en": "Music junior course"
+    },
+    "basePrice": 1500,
+    "durationInMinutes": 60,
+    "lessonType":"group",
+    "maxCapacity": 12
+}
+
+### Get all active courses
+GET http://localhost:5000/api/courses
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzE4MDM3NX0.54CVeu4Tz8ESJVqCm4g-L0jvqysD5VxbOdknZw58Av8
+
+### Get all active course categories
+GET http://localhost:5000/api/coursecategory
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzE4MDM3NX0.54CVeu4Tz8ESJVqCm4g-L0jvqysD5VxbOdknZw58Av8
