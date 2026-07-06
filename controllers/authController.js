@@ -70,3 +70,60 @@ export const loginUser = async (req, res, next) => {
     return next(error);
   }
 };
+
+export const getCurrentUserProfile = async (req, res, next) => {
+  try {
+    //req.user was inject by protect middleware
+    if (!req.user) {
+      res.status(404);
+      throw new Error("User session not found! / ไม่พบข้อมูลเซสชั่นผู้ใช้งาน");
+    }
+
+    return res.status(200).json({ success: true, data: req.user });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const switchBranch = async (req, res, next) => {
+  try {
+    const { schoolId } = req.body || {};
+
+    if (!schoolId) {
+      res.status(400);
+      throw new Error(
+        "Please provide a school branch ID / กรุณาระบุรหัสสาขาโรงเรียน",
+      );
+    }
+
+    //Check if user belong to branch (schoolId in user document)
+    const belongToBranch = req.user.schools.some(
+      (branch) => branch.toString() === schoolId,
+    );
+
+    if (!belongToBranch) {
+      res.status(403);
+      throw new Error(
+        "Access denied! you do not belong to this branch / คุณไม่มีสิทธิ์เข้าถึงสาขานี้",
+      );
+    }
+
+    //Update activeSchool in user document
+    req.user.activeSchool = schoolId;
+    await req.user.save();
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Successfully switched active branch / เปลี่ยนสาขาที่ใช้งานสำเร็จ",
+      data: {
+        id: req.user._id,
+        schools: req.user.schools,
+        activeSchool: req.user.activeSchool,
+        role: req.user.role,
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};

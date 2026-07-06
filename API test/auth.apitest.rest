@@ -5,16 +5,13 @@ Content-Type: application/json
 {
   "schoolId": "6a4684d8bbe327f841fbdcd3", 
   "name": {
-    "th": "ครูสมศรี มีฝีมือ",
-    "en": "Teacher Somsri Meefimue"
+    "th": "สุทธิพงษ์ ผลมาก",
+    "en": "Suttipong Polmag"
   },
-  "email": "somsri@school.com",
+  "email": "suttipong@school.com",
   "password": "password123",
-  "role": "teacher",
-  "phoneNumber": "0898765432",
-  "extraData": {
-    "instrumentsCanTeach": ["Piano", "Violin"]
-  }
+  "role": "admin",
+  "phoneNumber": "0895181958"
 }
 
 ### 2. Login with the New Credentials
@@ -22,6 +19,28 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "somsri@school.com",
+  "email": "suttipong@school.com",
   "password": "password123"
+}
+
+### Get current user profile
+GET http://localhost:5000/api/auth/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzMzNTM3NX0._11FBcfMfiO6n0uDhoRPvPdmp_-udgSI0pQi3ZEpkFY
+
+### Switch branch (User must have more than 1 school in schools key in user document)
+PATCH http://localhost:5000/api/auth/switch-branch
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzM0MjE2M30.Nxj6ZxlzoK0MyhCNo_58uJMBUujDQubS41EfdP1unyo
+
+{
+  "schoolId": "6a4b9e674dd915784e7cf926"
+}
+
+### Admin add new branch for "teacher" role user. *Need logon as admin to get permission
+PATCH http://localhost:5000/api/users/6a4908a2c0edb72d022e0419/add-branch
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNGJhYzE1YzdlZDZkOTExN2M4NTc1MSIsImlhdCI6MTc4MzM0NTA1Mn0.KmL6hs2jm8qcYk-rIp_QdMZynHoMiIXCFaFIOOgmUR0
+
+{
+  "schoolId": "6a4b9e674dd915784e7cf926"
 }

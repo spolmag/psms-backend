@@ -1,7 +1,15 @@
 import { Router } from "express";
-import { registerUser, loginUser } from "../controllers/authController.js";
+import {
+  registerUser,
+  loginUser,
+  getCurrentUserProfile,
+  switchBranch,
+} from "../controllers/authController.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 export const router = Router();
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+router.get("/me", protect, getCurrentUserProfile);
+router.patch("/switch-branch", protect, switchBranch);

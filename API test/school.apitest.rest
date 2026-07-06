@@ -5,15 +5,15 @@ Content-Type: application/json
 
 {
   "schoolName": {
-    "th": "โรงเรียนดนตรีสยามป๊อป",
-    "en": "Siam Pop Music Academy"
+    "th": "โรงเรียนดนตรีสยามป๊อป สาขา 2",
+    "en": "Siam Pop Music Academy - Second branch"
   },
   "schoolType": "music",
   "email": "contact@siampopmusic.com",
-  "phoneNumber": "+6629998888",
+  "phoneNumber": "+6628889999",
   "address": {
-    "th": "456 ถ.พหลโยธิน แขวงจตุจักร เขตจตุจักร กรุงเทพฯ 10900",
-    "en": "456 Phahonyothin Rd, Chatuchak, Bangkok 10900"
+    "th": "645 ถ.ลาดพร้าว เขตบางกะปิ กรุงเทพฯ 10500",
+    "en": "645 Ladprao Rd, Bangkapi, Bangkok 10500"
   },
   "settings": {
     "currency": "THB",
