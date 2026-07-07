@@ -42,13 +42,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyY
 ### Register group course
 POST http://localhost:5000/api/courses
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzE4MDM3NX0.54CVeu4Tz8ESJVqCm4g-L0jvqysD5VxbOdknZw58Av8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNGJhYzE1YzdlZDZkOTExN2M4NTc1MSIsImlhdCI6MTc4MzQxODY0N30.lnNuo6yYxNLOv0chUJtbiG7a6Pat7n3P4O5hM1STNh0
 
 {
-    "courseCategoryId":,
+    "courseCategoryId":"6a4cde3a7460052406d0e32f",
     "title": {
-        "th": "ดนตรีสำหรับเด็กเล็ก",
-        "en": "Music junior course"
+        "th": "ดนตรีสำหรับเด็กเล็ก 1",
+        "en": "Music junior course 1"
     },
     "basePrice": 1500,
     "durationInMinutes": 60,

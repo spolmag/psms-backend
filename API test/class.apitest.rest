@@ -1,0 +1,42 @@
+//Need user as admin or teacher role to create new class
+### User login
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "suttipong@school.com",
+  "password": "password123"
+}
+
+
+### Create a new class
+POST http://localhost:5000/api/classes
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNGJhYzE1YzdlZDZkOTExN2M4NTc1MSIsImlhdCI6MTc4MzQxODY0N30.lnNuo6yYxNLOv0chUJtbiG7a6Pat7n3P4O5hM1STNh0
+
+{
+    "courseId": "6a4ce0317460052406d0e332",
+    "teacherId": "6a4908a2c0edb72d022e0419",
+    "studentIds": "6a4cde957460052406d0e330",
+    "startTime": "2026-07-15T17:00:00.000Z",
+    "endTime": "2026-07-15T18:00:00.000Z",
+    "roomName": {
+        "th": "ห้องเรียนกลุ่ม 1",
+        "en": "Group Classroom 1"
+    },
+    "note": "Junior Music Couse 1"
+}
+
+
+### Add new student to group class
+PATCH http://localhost:5000/api/classes/6a4ce0c07460052406d0e333/add-student
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNGJhYzE1YzdlZDZkOTExN2M4NTc1MSIsImlhdCI6MTc4MzQxODY0N30.lnNuo6yYxNLOv0chUJtbiG7a6Pat7n3P4O5hM1STNh0
+
+{
+    "studentId": "6a4cde957460052406d0e330"
+}
+
+### Get teacher all classes
+GET http://localhost:5000/api/classes/teacher/6a4908a2c0edb72d022e0419
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNGJhYzE1YzdlZDZkOTExN2M4NTc1MSIsImlhdCI6MTc4MzQxODY0N30.lnNuo6yYxNLOv0chUJtbiG7a6Pat7n3P4O5hM1STNh0

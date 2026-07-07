@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addBranchToUser } from "../controllers/userController.js";
+import { addBranchToUser } from "../controllers/userControllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();

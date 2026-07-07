@@ -4,7 +4,7 @@ import {
   loginUser,
   getCurrentUserProfile,
   switchBranch,
-} from "../controllers/authController.js";
+} from "../controllers/authControllers.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 export const router = Router();

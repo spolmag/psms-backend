@@ -10,6 +10,7 @@ import { router as authRoutes } from "./routes/authRoutes.js";
 import { router as courseRoutes } from "./routes/courseRoutes.js";
 import { router as courseCategoryRoutes } from "./routes/courseCategoryRoutes.js";
 import { router as userRoutes } from "./routes/userRoutes.js";
+import { router as classRoutes } from "./routes/classRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -22,6 +23,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/coursecategory", courseCategoryRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/classes", classRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the Private School System Management API" });
