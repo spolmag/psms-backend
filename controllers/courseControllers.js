@@ -1,15 +1,19 @@
 import { Course } from "../models/Course.model.js";
 
+// @desc    Create a new course catalog package with tiered level parameters
+// @route   POST /api/courses
+// @access  Private (Admin & Teacher only)
 export const createCourse = async (req, res, next) => {
   try {
     let {
+      courseCategoryId,
       title,
       description,
       basePrice,
       durationInMinutes,
       lessonType,
       maxCapacity,
-      courseCategoryId,
+      levels,
     } = req.body || {};
 
     const schoolId = req.user.activeSchool;
@@ -18,6 +22,11 @@ export const createCourse = async (req, res, next) => {
       throw new Error(
         "No active school branch context found / ไม่พบข้อมูลสาขาโรงเรียน",
       );
+    }
+
+    //Prevent manual data-entry - transform to Lowercase
+    if (lessonType) {
+      lessonType = lessonType.toLowerCase();
     }
 
     if (lessonType === "private") {
@@ -39,6 +48,7 @@ export const createCourse = async (req, res, next) => {
     }
 
     const course = await Course.create({
+      courseCategoryId,
       schoolId,
       title,
       description,
@@ -46,7 +56,7 @@ export const createCourse = async (req, res, next) => {
       durationInMinutes,
       lessonType,
       maxCapacity,
-      courseCategoryId,
+      levels,
     });
 
     return res.status(201).json({ success: true, data: course });

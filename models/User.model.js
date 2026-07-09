@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema(
         "Please specify user role / กรุณาระบุสิทธิ์การใช้งานระบบ",
       ],
       enum: {
-        values: ["admin", "teacher", "student", "parent"],
+        values: ["admin", "teacher", "student", "parent", "user", "manager"],
         message: "{VALUE} is not a valid role",
       },
       default: "student",

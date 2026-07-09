@@ -1,5 +1,25 @@
 import mongoose from "mongoose";
 
+const levelSchema = new mongoose.Schema({
+  level: {
+    type: Number,
+    required: [
+      true,
+      "Please specify the level number / กรุณาระบุเลเวลของคอร์ส",
+    ],
+    min: [1, "Level number must be at least 1 / เลเวลต้องเริ่มจาก 1"],
+  },
+  levelName: {
+    type: String,
+    required: [true, "Please specify level name / กรุณาระบุชื่อเลเวล"],
+  },
+  price: {
+    type: Number,
+    required: [true, "Please add a price for this level / กรุณาระบุค่าเรียน"],
+    min: [0, "Price cannot be lower than 0 / ค่าเรียน ต้องไม่ต่ำกว่า 0"],
+  },
+});
+
 const courseSchema = new mongoose.Schema(
   {
     schoolId: {
@@ -29,10 +49,17 @@ const courseSchema = new mongoose.Schema(
       th: { type: String },
       en: { type: String },
     },
-    basePrice: {
-      type: Number,
-      required: [true, "Please add a course base price / กรุณาระบุค่าเรียน"],
-      min: [0, "Price cannot be lower than 0 / ค่าเรียนต้องไม่ต่ำกว่า 0"],
+    levels: {
+      type: [levelSchema],
+      required: [
+        true,
+        "Please add at least one level / กรูณาระบุเลเวลอย่างน้อย 1 เลเวล",
+      ],
+      validate: {
+        validator: function (array) {
+          return array && array.length > 0;
+        },
+      },
     },
     durationInMinutes: {
       type: Number,
@@ -66,5 +93,7 @@ const courseSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+courseSchema.index({ schoolId: 1, "levels.level": 1 });
 
 export const Course = mongoose.model("Course", courseSchema);

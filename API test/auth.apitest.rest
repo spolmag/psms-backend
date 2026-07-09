@@ -5,13 +5,13 @@ Content-Type: application/json
 {
   "schoolId": "6a4684d8bbe327f841fbdcd3", 
   "name": {
-    "th": "นกน้อย รักชาติ",
-    "en": "Noknoi Rakchart"
+    "th": "สุทธิพงษ์ ผลมาก",
+    "en": "Suttipong Polmag"
   },
-  "email": "noknoi@gmail.com",
+  "email": "spolmag@gmail.com",
   "password": "password123",
-  "role": "student",
-  "phoneNumber": "0894444444"
+  "role": "manager",
+  "phoneNumber": "0895181958"
 }
 
 ### 2. Login with the New Credentials

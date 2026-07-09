@@ -23,37 +23,29 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyY
     }
 }
 
-### Register classic guitar course
+### Register private piano course with levels
 POST http://localhost:5000/api/courses
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzI2MTMxOH0.3Uq8gOUmbqzl_JJi7WT_CaQ0Apj6gUC-520wxAts7pc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzYwMzg1OX0.6fCwgF1AjgmwUCKUmZgOWViER7pzetePOpLqCB5b6R8
 
 {
-    "courseCategoryId": "6a4a6db34b3ba514cc08c1ee",
-    "title":{
-        "th": "กีตาร์คลาสสิค",
-        "en": "Classical guitar"
-    },
-    "basePrice": 2500,
-    "durationInMinutes": 60,
-    "lessonType": "private"
-}
-
-### Register group course
-POST http://localhost:5000/api/courses
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNGJhYzE1YzdlZDZkOTExN2M4NTc1MSIsImlhdCI6MTc4MzQxODY0N30.lnNuo6yYxNLOv0chUJtbiG7a6Pat7n3P4O5hM1STNh0
-
-{
-    "courseCategoryId":"6a4cde3a7460052406d0e32f",
-    "title": {
-        "th": "ดนตรีสำหรับเด็กเล็ก 1",
-        "en": "Music junior course 1"
-    },
-    "basePrice": 1500,
-    "durationInMinutes": 60,
-    "lessonType":"group",
-    "maxCapacity": 12
+  "courseCategoryId": "6a4a6bf64b3ba514cc08c1ed",
+  "title": {
+    "th": "หลักสูตรเปียโนเด็กเล็ก",
+    "en": "Junior Progressive Piano Track"
+  },
+  "description": {
+    "th": "หลักสูตรฝึกทักษะนิ้วมือและสายตาแบ่งเป็นชุดตำราเรียนดนตรี",
+    "en": " Progressive physical notation and rhythmic course syllabus."
+  },
+  "durationInMinutes": 60,
+  "lessonType": "private",
+  "levels": [
+    { "level": 1, "levelName": "Book 1 - Green Primer", "price": 3200 },
+    { "level": 2, "levelName": "Book 2 - Blue Beginner", "price": 3200 },
+    { "level": 3, "levelName": "Book 3 - Orange Intermediate", "price": 3500 },
+    { "level": 4, "levelName": "Grade 1 Masterpiece", "price": 4000 }
+  ]
 }
 
 ### Get all active courses
