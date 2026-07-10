@@ -3,8 +3,16 @@ import { generateToken } from "../utils/generateToken.js";
 
 export const registerUser = async (req, res, next) => {
   try {
-    const { schoolId, name, email, password, role, phoneNumber, extraData } =
-      req.body || {};
+    const {
+      schoolId,
+      name,
+      email,
+      password,
+      role,
+      phoneNumber,
+      extraData,
+      academicProfile,
+    } = req.body || {};
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -23,6 +31,7 @@ export const registerUser = async (req, res, next) => {
       role,
       phoneNumber,
       extraData,
+      academicProfile,
     });
 
     return res.status(201).json({
@@ -35,6 +44,7 @@ export const registerUser = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        academicProfile: user.academicProfile,
       },
     });
   } catch (error) {
@@ -73,13 +83,21 @@ export const loginUser = async (req, res, next) => {
 
 export const getCurrentUserProfile = async (req, res, next) => {
   try {
-    //req.user was inject by protect middleware
     if (!req.user) {
       res.status(404);
-      throw new Error("User session not found! / ไม่พบข้อมูลเซสชั่นผู้ใช้งาน");
+      throw new Error("User session not found / ไม่พบข้อมูลผู้ใช้งาน");
     }
 
-    return res.status(200).json({ success: true, data: req.user });
+    const fullUserProfile = await User.findById(req.user._id)
+      .select("-password")
+      .populate("schools", "schoolName schoolType settings")
+      .populate("activeSchool", "schoolName schoolType settings")
+      .populate({
+        path: "academicProfile.studentTrack.courseId",
+        select: "title durationInMinutes lessonType levels",
+      });
+
+    return res.status(200).json({ success: true, data: fullUserProfile });
   } catch (error) {
     return next(error);
   }

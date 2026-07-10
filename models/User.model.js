@@ -1,6 +1,16 @@
 import mongoose, { mongo } from "mongoose";
 import bcrypt from "bcryptjs";
 
+const studentEnrolmentSchema = new mongoose.Schema({
+  courseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Course",
+    required: [true, ""],
+  },
+  currentLevel: { type: Number, required: true, default: 1 },
+  enrolledDate: { type: Date, default: Date.now },
+});
+
 const userSchema = new mongoose.Schema(
   {
     schools: [
@@ -64,6 +74,23 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    academicProfile: {
+      //For students
+      studentTrack: [studentEnrolmentSchema],
+      //For teacher
+      teacherCertifications: [
+        {
+          certificationBody: {
+            type: String,
+            enum: ["Yamaha", "Trinity", "ABRSM", "LCM", "None"],
+            default: "None",
+          },
+          passedGrade: {
+            type: String,
+          },
+        },
+      ],
+    },
     extraData: {
       type: Map,
       of: mongoose.Schema.Types.Mixed,
@@ -84,7 +111,7 @@ userSchema.pre("save", async function (next) {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
   } catch (error) {
-    return next(error);
+    throw error;
   }
 });
 

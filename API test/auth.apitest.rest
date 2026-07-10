@@ -19,9 +19,67 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "suttipong@school.com",
+  "email": "spolmag@gmail.com",
   "password": "password123"
 }
+
+### Register a new student/teacher
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a4b9e674dd915784e7cf926", 
+  "name": {
+    "th": "ณัฐวุฒิ สอนดี",
+    "en": "Natthawut Sondee"
+  },
+  "email": "natthawut.teacher@school.com",
+  "password": "teacherpassword123",
+  "role": "teacher",
+  "phoneNumber": "0898765432",
+  "academicProfile": {
+    "teacherCertification": {
+      "certificationBody": "Yamaha",
+      "passedGrade": "Grade 5"
+    }
+  }
+}
+
+### Register a new teacher with multi grade
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a4b9e674dd915784e7cf926", 
+  "name": {
+    "th": "สมชาย คั้งยัง",
+    "en": "Somchai Kangyang"
+  },
+  "email": "somchai.teacher@school.com",
+  "password": "password123",
+  "role": "teacher",
+  "phoneNumber": "0898765432",
+  "academicProfile": {
+    "teacherCertifications": [
+      {
+        "certificationBody": "ABRSM",
+        "passedGrade": "Grade 8 Piano Performance with Distinction"
+      },
+      {
+        "certificationBody": "Yamaha",
+        "passedGrade": "Grade 5 Instructor Certified Grade"
+      },
+      {
+        "certificationBody": "Trinity",
+        "passedGrade": "ATCL Recital Diploma"
+      }
+    ]
+  }
+}
+
+### Admin/Manager get user profile by ID
+GET http://localhost:5000/api/users/6a510011bf2a54a0212f2bf9
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTBmY2Y0YzYwMzUzNjk2NWU1NzUwOCIsImlhdCI6MTc4MzY5NDc5NX0.O7rx3OZyxOiIc7GN0XsuukuP1IA0jinl-otQyfNqawo
 
 ### Get current user profile
 GET http://localhost:5000/api/auth/me

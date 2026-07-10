@@ -33,3 +33,28 @@ export const addBranchToUser = async (req, res, next) => {
     return next(error);
   }
 };
+
+// @desc    Admin/Manager look up any specific user profile details (Deep Populated)
+// @route   GET /api/users/:id
+// @access  Private (Strictly Admin & Manager only)
+export const getUserProfileById = async (req, res, next) => {
+  try {
+    const userProfile = await User.findById(req.params.id)
+      .select("-password")
+      .populate("schools", "schoolName schoolType settings")
+      .populate("activeSchool", "schoolName schoolType settings")
+      .populate({
+        path: "academicProfile.studentTrack.courseId",
+        select: "title durationInMinutes lessonType levels",
+      });
+
+    if (!userProfile) {
+      res.status(404);
+      throw new Error("User account not found / ไม่พบบัญชีผู้ใช้งานนี้ในระบบ");
+    }
+
+    return res.status(200).json({ success: true, data: userProfile });
+  } catch (error) {
+    return next(error);
+  }
+};
