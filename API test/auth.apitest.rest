@@ -45,6 +45,31 @@ Content-Type: application/json
   }
 }
 
+### Register a new student with date of birth
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a4684d8bbe327f841fbdcd3", 
+  "name": {
+    "th": "เด็กหญิง มะลิ รักดี",
+    "en": "Miss Mali Rakdee"
+  },
+  "email": "mali.student@gmail.com",
+  "password": "studentpassword123",
+  "role": "student",
+  "phoneNumber": "0823456789",
+  "dateOfBirth": "2019-04-12",
+  "academicProfile": {
+    "studentTrack": [
+      {
+        "courseId": "6a4fa2b0ad1d8c1c237e6f64",
+        "currentLevel": 1
+      }
+    ]
+  }
+}
+
 ### Register a new teacher with multi grade
 POST http://localhost:5000/api/auth/register
 Content-Type: application/json

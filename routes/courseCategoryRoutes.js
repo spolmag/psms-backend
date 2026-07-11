@@ -9,5 +9,9 @@ export const router = Router();
 
 router
   .route("/")
-  .post(protect, restrictTo("admin", "teacher"), createCourseCategory)
+  .post(
+    protect,
+    restrictTo("admin", "teacher", "manager"),
+    createCourseCategory,
+  )
   .get(protect, getCourseCategory);

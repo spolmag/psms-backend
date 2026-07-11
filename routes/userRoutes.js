@@ -7,5 +7,10 @@ import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();
 
-router.patch("/:id/add-branch", protect, restrictTo("admin"), addBranchToUser);
+router.patch(
+  "/:id/add-branch",
+  protect,
+  restrictTo("admin", "manager"),
+  addBranchToUser,
+);
 router.get("/:id", protect, restrictTo("admin", "manager"), getUserProfileById);

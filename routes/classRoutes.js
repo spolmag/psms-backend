@@ -8,11 +8,16 @@ import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();
 
-router.post("/", protect, restrictTo("admin", "teacher"), createClass);
+router.post(
+  "/",
+  protect,
+  restrictTo("admin", "teacher", "manager"),
+  createClass,
+);
 router.get("/teacher/:teacherId", protect, getTeacherClasses);
 router.patch(
   "/:id/add-student",
   protect,
-  restrictTo("admin", "teacher"),
+  restrictTo("admin", "teacher", "manager"),
   addStudentToClass,
 );

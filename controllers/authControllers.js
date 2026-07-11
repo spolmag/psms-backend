@@ -10,6 +10,7 @@ export const registerUser = async (req, res, next) => {
       password,
       role,
       phoneNumber,
+      dateOfBirth,
       extraData,
       academicProfile,
     } = req.body || {};
@@ -30,6 +31,7 @@ export const registerUser = async (req, res, next) => {
       password,
       role,
       phoneNumber,
+      dateOfBirth,
       extraData,
       academicProfile,
     });

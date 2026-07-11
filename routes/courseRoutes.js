@@ -6,5 +6,5 @@ export const router = Router();
 
 router
   .route("/")
-  .post(protect, restrictTo("admin", "teacher"), createCourse)
+  .post(protect, restrictTo("admin", "teacher", "manager"), createCourse)
   .get(protect, getCourses);

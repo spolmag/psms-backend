@@ -46,8 +46,14 @@ const courseSchema = new mongoose.Schema(
       },
     },
     description: {
-      th: { type: String },
-      en: { type: String },
+      th: {
+        type: [String],
+        default: [],
+      },
+      en: {
+        type: [String],
+        default: [],
+      },
     },
     levels: {
       type: [levelSchema],

@@ -3,7 +3,7 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "somsri@school.com",
+  "email": "spolmag@gmail.com",
   "password": "password123"
 }
 
@@ -45,6 +45,37 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyY
     { "level": 2, "levelName": "Book 2 - Blue Beginner", "price": 3200 },
     { "level": 3, "levelName": "Book 3 - Orange Intermediate", "price": 3500 },
     { "level": 4, "levelName": "Grade 1 Masterpiece", "price": 4000 }
+  ]
+}
+
+### Register guitar course with description as array
+POST http://localhost:5000/api/courses
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTBmY2Y0YzYwMzUzNjk2NWU1NzUwOCIsImlhdCI6MTc4Mzc3ODAzNX0.Zm0n4Xkeg8Vo8Sy4UvRA5osHVxaE1jqlbnE6-_TT1q8
+
+{
+  "courseCategoryId": "6a4684d8bbe327f841fbdcd3",
+  "title": {
+    "th": "คอร์สกีตาร์โปร่งพื้นฐาน",
+    "en": "Basic Acoustic Guitar Course"
+  },
+  "description": {
+    "th": [
+      "ฝึกการจับคอร์ดเบื้องต้นและการกรีดนิ้ว",
+      "เรียนรู้สัดส่วนจังหวะดนตรีพื้นฐานผ่านเพลงป๊อปยอดนิยม",
+      "เหมาะสำหรับผู้เริ่มต้นตั้งแต่อายุ 8 ปีขึ้นไป"
+    ],
+    "en": [
+      "Master foundational chord fingerings and basic strumming patterns.",
+      "Learn essential rhythmic subdivisions through modern pop songs.",
+      "Perfectly tailored for beginners starting from 8 years old and up."
+    ]
+  },
+  "durationInMinutes": 50,
+  "lessonType": "private",
+  "levels": [
+    { "level": 1, "levelName": "Beginner Level 1", "price": 3400 },
+    { "level": 2, "levelName": "Beginner Level 2", "price": 3400 }
   ]
 }
 
