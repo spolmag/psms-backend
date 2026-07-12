@@ -1,0 +1,38 @@
+### Need admin or manager login to create user certificates
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "spolmag@gmail.com",
+  "password": "password123"
+}
+
+### Create certificate for a teacher
+POST http://localhost:5000/api/certificates
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTBmY2Y0YzYwMzUzNjk2NWU1NzUwOCIsImlhdCI6MTc4Mzg2MTc3Mn0.DpxGOJR1NM5jP2djLeNh3sANIyDDE_MeSYdFZn-J-Rc
+
+{
+  "userId": "6a5103ed2149f0f8216255ad",
+  "certificationBody": "Yamaha",
+  "passedGrade": "Piano Grade 5",
+  "recordDate": "2026-07-20",
+  "note": "Exam at YMS H/O"
+}
+
+### Create certificate "Other" for a student
+POST http://localhost:5000/api/certificates
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTBmY2Y0YzYwMzUzNjk2NWU1NzUwOCIsImlhdCI6MTc4Mzg2MTc3Mn0.DpxGOJR1NM5jP2djLeNh3sANIyDDE_MeSYdFZn-J-Rc
+
+{
+  "userId": "6a52464303997613072e6a77",
+  "certificationBody": "Other",
+  "customBodyName": "Mahidol Music Grade Performance",
+  "passedGrade": "Grade 2 Classical Piano Solo",
+  "recordDate": "2026-07-12"
+}
+
+### Get all certificates of req user ID
+GET http://localhost:5000/api/certificates/user/6a5103ed2149f0f8216255ad
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTBmY2Y0YzYwMzUzNjk2NWU1NzUwOCIsImlhdCI6MTc4Mzg2MTc3Mn0.DpxGOJR1NM5jP2djLeNh3sANIyDDE_MeSYdFZn-J-Rc

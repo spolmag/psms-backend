@@ -5,10 +5,10 @@ const studentEnrolmentSchema = new mongoose.Schema({
   courseId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Course",
-    required: [true, ""],
+    required: [true, "Course reference is require / กรุณาระบุคอร์สเรียน"],
   },
   currentLevel: { type: Number, required: true, default: 1 },
-  enrolledDate: { type: Date, default: Date.now },
+  recordDate: { type: Date, default: Date.now },
 });
 
 const userSchema = new mongoose.Schema(
@@ -80,19 +80,6 @@ const userSchema = new mongoose.Schema(
     academicProfile: {
       //For students
       studentTrack: [studentEnrolmentSchema],
-      //For teacher
-      teacherCertifications: [
-        {
-          certificationBody: {
-            type: String,
-            enum: ["Yamaha", "Trinity", "ABRSM", "LCM", "None"],
-            default: "None",
-          },
-          passedGrade: {
-            type: String,
-          },
-        },
-      ],
     },
     extraData: {
       type: Map,
