@@ -9,6 +9,14 @@ const studentEnrolmentSchema = new mongoose.Schema({
   },
   currentLevel: { type: Number, required: true, default: 1 },
   recordDate: { type: Date, default: Date.now },
+  status: {
+    type: String,
+    enum: {
+      values: ["active", "dropped", "completed"], //active (learning), dropped (quit this course), completed (finish this corse)
+      message: "{VALUE} is not a valid course track status",
+    },
+    default: "active",
+  },
 });
 
 const userSchema = new mongoose.Schema(

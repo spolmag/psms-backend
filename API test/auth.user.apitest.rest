@@ -52,14 +52,14 @@ Content-Type: application/json
 {
   "schoolId": "6a4684d8bbe327f841fbdcd3", 
   "name": {
-    "th": "เด็กหญิง มะลิ รักดี",
-    "en": "Miss Mali Rakdee"
+    "th": "เด็กชาย ต่าย โคตรเซียน",
+    "en": "Mr. Tai Cortsien"
   },
-  "email": "mali.student@gmail.com",
+  "email": "tai.student@gmail.com",
   "password": "studentpassword123",
   "role": "student",
-  "phoneNumber": "0823456789",
-  "dateOfBirth": "2019-04-12",
+  "phoneNumber": "0822222222",
+  "dateOfBirth": "1967-08-07",
   "academicProfile": {
     "studentTrack": [
       {
@@ -126,4 +126,35 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNGJhYzE1Y
 
 {
   "schoolId": "6a4b9e674dd915784e7cf926"
+}
+
+### Manager/admin Levels up a student track or add new corse for student(need admin/manager token)
+PATCH http://localhost:5000/api/users/6a54f7df041a9cc7404dba21/academic-profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTBmY2Y0YzYwMzUzNjk2NWU1NzUwOCIsImlhdCI6MTc4Mzk1MjQ5OX0.vgSdO0KsaH3q6LmiLIvbPYth1qGY-0FsMtCu7CyrlBI
+
+{
+  "studentTrack": [
+    {
+      "courseId": "6a4fa2b0ad1d8c1c237e6f64",
+      "currentLevel": 2,
+      "recordDate": "2026-07-13"
+    }
+  ]
+}
+
+### Manager or admin drop a course of student
+PATCH http://localhost:5000/api/users/6a54f7df041a9cc7404dba21/academic-profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTBmY2Y0YzYwMzUzNjk2NWU1NzUwOCIsImlhdCI6MTc4Mzk1MjQ5OX0.vgSdO0KsaH3q6LmiLIvbPYth1qGY-0FsMtCu7CyrlBI
+
+{
+  "studentTrack": [
+    {
+      "courseId": "6a4fa2b0ad1d8c1c237e6f64",
+      "currentLevel": 2,
+      "status": "dropped",
+      "recordDate": "2026-07-13"
+    }
+  ]
 }
