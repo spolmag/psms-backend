@@ -4,78 +4,219 @@ Content-Type: application/json
 
 {
   "email": "spolmag@gmail.com",
-  "password": "password123"
+  "password": "password1234"
 }
 
-### Create course category
-POST http://localhost:5000/api/coursecategory
+### D1. Create Course Category 1: Piano
+POST http://localhost:5000/api/course-categories
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzI2MTMxOH0.3Uq8gOUmbqzl_JJi7WT_CaQ0Apj6gUC-520wxAts7pc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzODQ2NH0.-yGnStIiUHM_ZJQCIqBglERyA5srGghKvw7zzI8SioY
 
 {
-    "name":{
-        "th": "กีตาร์",
-        "en": "Guitar"
-    },
-    "description":{
-        "th": "หลักสูตรวิชากีตาร์",
-        "en": "Guitar course"
-    }
-}
-
-### Register private piano course with levels
-POST http://localhost:5000/api/courses
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzYwMzg1OX0.6fCwgF1AjgmwUCKUmZgOWViER7pzetePOpLqCB5b6R8
-
-{
-  "courseCategoryId": "6a4a6bf64b3ba514cc08c1ed",
-  "title": {
-    "th": "หลักสูตรเปียโนเด็กเล็ก",
-    "en": "Junior Progressive Piano Track"
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "เปียโน",
+    "en": "Piano"
   },
   "description": {
-    "th": "หลักสูตรฝึกทักษะนิ้วมือและสายตาแบ่งเป็นชุดตำราเรียนดนตรี",
-    "en": " Progressive physical notation and rhythmic course syllabus."
-  },
-  "durationInMinutes": 60,
-  "lessonType": "private",
-  "levels": [
-    { "level": 1, "levelName": "Book 1 - Green Primer", "price": 3200 },
-    { "level": 2, "levelName": "Book 2 - Blue Beginner", "price": 3200 },
-    { "level": 3, "levelName": "Book 3 - Orange Intermediate", "price": 3500 },
-    { "level": 4, "levelName": "Grade 1 Masterpiece", "price": 4000 }
-  ]
+    "th": "รวมหลักสูตรเปียโนคลาสสิก ป๊อป และแจ๊สสำหรับทุกช่วงวัย",
+    "en": "Comprehensive classical, pop, and jazz piano tracks for all ages."
+  }
 }
 
-### Register guitar course with description as array
-POST http://localhost:5000/api/courses
+###
+
+### D2. Create Course Category 2: Music for Kids
+POST http://localhost:5000/api/course-categories
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTBmY2Y0YzYwMzUzNjk2NWU1NzUwOCIsImlhdCI6MTc4Mzc3ODAzNX0.Zm0n4Xkeg8Vo8Sy4UvRA5osHVxaE1jqlbnE6-_TT1q8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzODQ2NH0.-yGnStIiUHM_ZJQCIqBglERyA5srGghKvw7zzI8SioY
 
 {
-  "courseCategoryId": "6a4684d8bbe327f841fbdcd3",
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "ดนตรีสำหรับเด็กเล็ก",
+    "en": "Music for Kids"
+  },
+  "description": {
+    "th": "หลักสูตรปูพื้นฐานทักษะดนตรี การฟัง และจังหวะสําหรับเด็กอายุ 3-6 ปี",
+    "en": "Foundational ear training, rhythm, and musical exploration for ages 3-6."
+  }
+}
+
+###
+
+### D3. Create Course Category 3: Guitar
+POST http://localhost:5000/api/course-categories
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzODQ2NH0.-yGnStIiUHM_ZJQCIqBglERyA5srGghKvw7zzI8SioY
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "กีตาร์",
+    "en": "Guitar"
+  },
+  "description": {
+    "th": "วิชากีตาร์โปร่ง กีตาร์คลาสสิก และกีตาร์ไฟฟ้า",
+    "en": "Acoustic, classical, and electric guitar individual and group syllabi."
+  }
+}
+
+###
+
+### D4. Create Course Category 4: Violin
+POST http://localhost:5000/api/course-categories
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzODQ2NH0.-yGnStIiUHM_ZJQCIqBglERyA5srGghKvw7zzI8SioY
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "ไวโอลิน",
+    "en": "Violin"
+  },
+  "description": {
+    "th": "หลักสูตรไวโอลินคลาสสิกขั้นพื้นฐานไปจนถึงระดับสูง",
+    "en": "Progressive classical violin methods from beginner to advanced tiers."
+  }
+}
+
+
+### E1. Create Course: Private Piano Course (Private 1-on-1)
+POST http://localhost:5000/api/courses
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzODQ2NH0.-yGnStIiUHM_ZJQCIqBglERyA5srGghKvw7zzI8SioY
+
+{
+  "courseCategoryId": "6a56453e82fb4ac5a6aec162",
   "title": {
-    "th": "คอร์สกีตาร์โปร่งพื้นฐาน",
-    "en": "Basic Acoustic Guitar Course"
+    "th": "เปียโนเดี่ยว",
+    "en": "Private Piano Course"
   },
   "description": {
     "th": [
-      "ฝึกการจับคอร์ดเบื้องต้นและการกรีดนิ้ว",
-      "เรียนรู้สัดส่วนจังหวะดนตรีพื้นฐานผ่านเพลงป๊อปยอดนิยม",
-      "เหมาะสำหรับผู้เริ่มต้นตั้งแต่อายุ 8 ปีขึ้นไป"
+      "เรียนเดี่ยวแบบตัวต่อตัวกับครูผู้เชี่ยวชาญ",
+      "เน้นการจัดสรีระนิ้วมือ ข้อมือ และท่าทางการนั่งที่ถูกต้อง",
+      "ปูพื้นฐานการอ่านโน้ตสากล กุญแจซอล และกุญแจเอฟ",
+      "เตรียมความพร้อมสำหรับการสอบเกรดดนตรีสากลระดับสากล"
     ],
     "en": [
-      "Master foundational chord fingerings and basic strumming patterns.",
-      "Learn essential rhythmic subdivisions through modern pop songs.",
-      "Perfectly tailored for beginners starting from 8 years old and up."
+      "Intensive 1-on-1 private lesson tailored to individual pacing.",
+      "Focuses on correct finger mechanics, hand posturing, and posture.",
+      "Comprehensive standard sight-reading for both Treble and Bass clefs.",
+      "Complete preparation syllabus for international examination boards."
     ]
   },
-  "durationInMinutes": 50,
+  "durationInMinutes": 60,
   "lessonType": "private",
+  "maxCapacity": 1,
   "levels": [
-    { "level": 1, "levelName": "Beginner Level 1", "price": 3400 },
-    { "level": 2, "levelName": "Beginner Level 2", "price": 3400 }
+    { "level": 1, "levelName": "Primer Course Book 1", "price": 3200 },
+    { "level": 2, "levelName": "Beginner Course Book 2", "price": 3200 },
+    { "level": 3, "levelName": "Intermediate Grade 1", "price": 3500 },
+    { "level": 4, "levelName": "Intermediate Grade 2", "price": 3800 }
+  ]
+}
+
+###
+
+### E2. Create Course: Violin Course (Private 1-on-1)
+POST http://localhost:5000/api/courses
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzODQ2NH0.-yGnStIiUHM_ZJQCIqBglERyA5srGghKvw7zzI8SioY
+
+{
+  "courseCategoryId": "6a5645c282fb4ac5a6aec164",
+  "title": {
+    "th": "ไวโอลินพื้นฐาน",
+    "en": "Foundational Violin"
+  },
+  "description": {
+    "th": [
+      "พัฒนาทักษะการจับคันสีและการใช้นิ้วมือบนฟิงเกอร์บอร์ด",
+      "ฝึกฝนการฟังและการจับคู่ระดับเสียงที่แม่นยำ (Ear Training)",
+      "เรียนรู้เทคนิคการลากโบว์ขั้นพื้นฐานไปจนถึงเพลงบรรเลงเดี่ยว"
+    ],
+    "en": [
+      "Develop proper bow hold technique and fingerboard mechanics.",
+      "Intensive ear training and precision pitch matching exercises.",
+      "Master foundational bowing strokes up to expressive solo repertoires."
+    ]
+  },
+  "durationInMinutes": 60,
+  "lessonType": "private",
+  "maxCapacity": 1,
+  "levels": [
+    { "level": 1, "levelName": "Suzuki Method Vol.1", "price": 3400 },
+    { "level": 2, "levelName": "Suzuki Method Vol.2", "price": 3600 }
+  ]
+}
+
+###
+
+### E3. Create Course: Folk Guitar Course (Private 1-on-1)
+POST http://localhost:5000/api/courses
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzODQ2NH0.-yGnStIiUHM_ZJQCIqBglERyA5srGghKvw7zzI8SioY
+
+{
+  "courseCategoryId": "6a56461382fb4ac5a6aec165",
+  "title": {
+    "th": "กีตาร์โปร่งและโฟล์กซอง",
+    "en": "Acoustic Folk Guitar"
+  },
+  "description": {
+    "th": [
+      "ฝึกการจับคอร์ดพื้นฐาน คอร์ดทาบ และเปิดคอร์ดเปิดเสียง",
+      "เรียนรู้แพทเทิร์นการตีคอร์ดและการเกาตบสาย (Fingerstyle)",
+      "เน้นการเล่นเพลงป๊อปและเพลงโฟล์กยอดนิยมเพื่อความสนุกสนาน"
+    ],
+    "en": [
+      "Master fundamental open chords, barre chords, and transitions.",
+      "Learn essential strumming structures and basic fingerstyle picking.",
+      "Focuses on popular folk and acoustic pop arrangements for leisure."
+    ]
+  },
+  "durationInMinutes": 60,
+  "lessonType": "private",
+  "maxCapacity": 1,
+  "levels": [
+    { "level": 1, "levelName": "Acoustic Foundation Tier 1", "price": 2800 },
+    { "level": 2, "levelName": "Acoustic Foundation Tier 2", "price": 3000 }
+  ]
+}
+
+###
+
+### E4. Create Course: Music for Kids Course (Group Class - Max 10 Students)
+POST http://localhost:5000/api/courses
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzODQ2NH0.-yGnStIiUHM_ZJQCIqBglERyA5srGghKvw7zzI8SioY
+
+{
+  "courseCategoryId": "6a56458182fb4ac5a6aec163",
+  "title": {
+    "th": "ดนตรีกลุ่มสร้างสรรค์สำหรับเด็กเล็ก",
+    "en": "Creative Junior Music Group"
+  },
+  "description": {
+    "th": [
+      "กิจกรรมกลุ่มเน้นการเคลื่อนไหวตามจังหวะดนตรีแสนสนุก",
+      "ฝึกทักษะการฟัง การร้องเพลง และเล่นเครื่องเคาะจังหวะเบื้องต้น",
+      "เสริมสร้างพัฒนาการ คลาสดนตรีสร้างสรรค์ร่วมกับเพื่อนๆ ในห้องเรียน"
+    ],
+    "en": [
+      "Engaging group activities focused on rhythm-based physical movement.",
+      "Develop ear training, nursery singing, and auxiliary percussion playing.",
+      "Boost cognitive development in a fun, shared social group class."
+    ]
+  },
+  "durationInMinutes": 45,
+  "lessonType": "group",
+  "maxCapacity": 10,
+  "levels": [
+    { "level": 1, "levelName": "Junior Rhythm Stage A", "price": 2200 },
+    { "level": 2, "levelName": "Junior Rhythm Stage B", "price": 2400 }
   ]
 }
 

@@ -5,7 +5,7 @@ const courseCategorySchema = new mongoose.Schema(
     schoolId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "School",
-      reqiured: [
+      required: [
         true,
         "Category must belong to school branch / กลุ่มวิชา ต้องระบุโรงเรียน-สาขา",
       ],

@@ -4,34 +4,68 @@ Content-Type: application/json
 
 {
   "email": "spolmag@gmail.com",
-  "password": "password123"
+  "password": "password1234"
 }
 
-### Create certificate for a teacher
+### C1. Log Certificate 1 for Somsri Meefimue (ABRSM Grade 8)
 POST http://localhost:5000/api/certificates
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTBmY2Y0YzYwMzUzNjk2NWU1NzUwOCIsImlhdCI6MTc4Mzg2MTc3Mn0.DpxGOJR1NM5jP2djLeNh3sANIyDDE_MeSYdFZn-J-Rc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzNzgyM30._rOdCWP0E6LZAfxlhBYE_p3I0zeNI6SD8L2gANBuNZc
 
 {
-  "userId": "6a5103ed2149f0f8216255ad",
+  "userId": "6a563f9327e89c61dbe3e85f",
+  "certificationBody": "ABRSM",
+  "passedGrade": "Grade 8 Practical Piano Performance",
+  "recordDate": "2026-05-10",
+  "note": "Verified original paper certificate document copy from the Associated Board of the Royal Schools of Music."
+}
+
+###
+
+### C2. Log Certificate 2 for Somsri Meefimue (Yamaha Grade 5)
+POST http://localhost:5000/api/certificates
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzNzgyM30._rOdCWP0E6LZAfxlhBYE_p3I0zeNI6SD8L2gANBuNZc
+
+{
+  "userId": "6a563f9327e89c61dbe3e85f",
   "certificationBody": "Yamaha",
-  "passedGrade": "Piano Grade 5",
-  "recordDate": "2026-07-20",
-  "note": "Exam at YMS H/O"
+  "passedGrade": "Grade 5 Fundamentals & Performance Instructor Grade",
+  "recordDate": "2026-06-15",
+  "note": "Official Yamaha Music Foundation instructor credential log entry."
 }
 
-### Create certificate "Other" for a student
+###
+
+### C3. Log Certificate for Natthawut Sondee (Trinity ATCL Diploma)
 POST http://localhost:5000/api/certificates
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTBmY2Y0YzYwMzUzNjk2NWU1NzUwOCIsImlhdCI6MTc4Mzg2MTc3Mn0.DpxGOJR1NM5jP2djLeNh3sANIyDDE_MeSYdFZn-J-Rc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzNzgyM30._rOdCWP0E6LZAfxlhBYE_p3I0zeNI6SD8L2gANBuNZc
 
 {
-  "userId": "6a52464303997613072e6a77",
-  "certificationBody": "Other",
-  "customBodyName": "Mahidol Music Grade Performance",
-  "passedGrade": "Grade 2 Classical Piano Solo",
-  "recordDate": "2026-07-12"
+  "userId": "6a563f9c27e89c61dbe3e860",
+  "certificationBody": "Trinity",
+  "passedGrade": "ATCL Piano Recital Diploma (Associate of Trinity College London)",
+  "recordDate": "2026-04-12",
+  "note": "Verified professional music performance diploma framework."
 }
+
+###
+
+### C4. Log Certificate for Pimchanok Ruamjai (Custom Local University via 'Other')
+POST http://localhost:5000/api/certificates
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzNzgyM30._rOdCWP0E6LZAfxlhBYE_p3I0zeNI6SD8L2gANBuNZc
+
+{
+  "userId": "6a563fae27e89c61dbe3e861",
+  "certificationBody": "Other",
+  "customBodyName": "Mahidol University College of Music",
+  "passedGrade": "Time Program Grade 7 Classical Violin Certification",
+  "recordDate": "2026-07-01",
+  "note": "Recorded custom academic examination board credentials tracking profile."
+}
+
 
 ### Get all certificates of req user ID
 GET http://localhost:5000/api/certificates/user/6a5103ed2149f0f8216255ad

@@ -1,21 +1,22 @@
 ### Register new school
 
+### 1. Register Mock School Branch 1 (Headquarters - Sukhumvit)
 POST http://localhost:5000/api/schools
 Content-Type: application/json
 
 {
   "schoolName": {
-    "th": "โรงเรียนดนตรีสยามป๊อป สาขา 2",
-    "en": "Siam Pop Music Academy - Second branch"
+    "th": "โรงเรียนดนตรีสยามป๊อป สาขาสุขุมวิท",
+    "en": "Siam Pop Music Academy - Sukhumvit Branch"
   },
   "schoolType": "music",
-  "email": "contact@siampopmusic.com",
-  "phoneNumber": "+6628889999",
+  "email": "sukhumvit@siampopmusic.com",
+  "phoneNumber": "021234567",
   "address": {
-    "th": "645 ถ.ลาดพร้าว เขตบางกะปิ กรุงเทพฯ 10500",
-    "en": "645 Ladprao Rd, Bangkapi, Bangkok 10500"
+    "th": "123/45 ถนนสุขุมวิท แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110",
+    "en": "123/45 Sukhumvit Rd, Khlong Toei, Khlong Toei, Bangkok 10110"
   },
-  "settings": {
+  "setting": {
     "currency": "THB",
     "timeZone": "Asia/Bangkok",
     "isVatEnabled": true,
@@ -23,5 +24,29 @@ Content-Type: application/json
   }
 }
 
+### 2. Register Mock School Branch 2 (Secondary Branch - Chiang Mai)
+POST http://localhost:5000/api/schools
+Content-Type: application/json
+
+{
+  "schoolName": {
+    "th": "โรงเรียนดนตรีสยามป๊อป สาขาเชียงใหม่",
+    "en": "Siam Pop Music Academy - Chiang Mai Branch"
+  },
+  "schoolType": "music",
+  "email": "chiangmai@siampopmusic.com",
+  "phoneNumber": "053999888",
+  "address": {
+    "th": "88/9 ถนนห้วยแก้ว ตำบลสุเทพ อำเภอเมืองเชียงใหม่ เชียงใหม่ 50200",
+    "en": "88/9 Huay Kaew Rd, Suthep, Mueang Chiang Mai, Chiang Mai 50200"
+  },
+  "setting": {
+    "currency": "THB",
+    "timeZone": "Asia/Bangkok",
+    "isVatEnabled": false,
+    "vatRate": 7
+  }
+}
+
 ### Get school by ID
-GET http://localhost:5000/api/schools/6a4684d8bbe327f841fbdcd3
+GET http://localhost:5000/api/schools/6a56367027e89c61dbe3e84e

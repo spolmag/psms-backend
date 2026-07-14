@@ -22,7 +22,7 @@ app.use(express.json());
 app.use("/api/schools", schoolRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
-app.use("/api/coursecategory", courseCategoryRoutes);
+app.use("/api/course-categories", courseCategoryRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/classes", classRoutes);
 app.use("/api/certificates", certificateRoutes);

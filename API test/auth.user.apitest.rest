@@ -1,106 +1,300 @@
-### 1. Register a New User Account (Multi-Branch Ready)
+### Register Manager: Suttipong Polmag (Sukhumvit Branch)
 POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "schoolId": "6a4684d8bbe327f841fbdcd3", 
+  "schoolId": "6a56367027e89c61dbe3e84e",
   "name": {
     "th": "สุทธิพงษ์ ผลมาก",
     "en": "Suttipong Polmag"
   },
-  "email": "spolmag@gmail.com",
-  "password": "password123",
+  "email": "suttipong.manager@siampopmusic.com",
+  "password": "password1234",
   "role": "manager",
-  "phoneNumber": "0895181958"
+  "phoneNumber": "0895181958",
+  "dateOfBirth": "1988-11-23"
 }
 
-### 2. Login with the New Credentials
-POST http://localhost:5000/api/auth/login
-Content-Type: application/json
+###
 
-{
-  "email": "spolmag@gmail.com",
-  "password": "password123"
-}
-
-### Register a new student/teacher
+### Register Admin 1: Nattaporn Somdee (Sukhumvit HQ)
 POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "schoolId": "6a4b9e674dd915784e7cf926", 
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "ณัฐพร สมดี",
+    "en": "Nattaporn Somdee"
+  },
+  "email": "admin.hq@siampopmusic.com",
+  "password": "password1234",
+  "role": "admin",
+  "phoneNumber": "0812345678",
+  "dateOfBirth": "1992-04-15"
+}
+
+###
+
+### Register Admin 2: Chatchai Deejaidee (Chiang Mai Branch)
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367527e89c61dbe3e84f",
+  "name": {
+    "th": "ฉัตรชัย ดีใจดี",
+    "en": "Chatchai Deejaidee"
+  },
+  "email": "admin.cm@siampopmusic.com",
+  "password": "password1234",
+  "role": "admin",
+  "phoneNumber": "0898765432",
+  "dateOfBirth": "1995-08-20"
+}
+
+### Register Student 1: Somchai Kengkla
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "เด็กชาย สมชาย เก่งกล้า",
+    "en": "Master Somchai Kengkla"
+  },
+  "email": "somchai.k@gmail.com",
+  "password": "password1234",
+  "role": "student",
+  "phoneNumber": "0861112222",
+  "dateOfBirth": "2016-03-12"
+}
+
+###
+
+### Register Student 2: Anan Sookjai
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "เด็กชาย อนันต์ สุขใจ",
+    "en": "Master Anan Sookjai"
+  },
+  "email": "anan.s@gmail.com",
+  "password": "password1234",
+  "role": "student",
+  "phoneNumber": "0862223333",
+  "dateOfBirth": "2017-07-22"
+}
+
+###
+
+### Register Student 3: Kittisak Deemee
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "เด็กชาย กิตติศักดิ์ ดีมี",
+    "en": "Master Kittisak Deemee"
+  },
+  "email": "kittisak.d@gmail.com",
+  "password": "password1234",
+  "role": "student",
+  "phoneNumber": "0863334444",
+  "dateOfBirth": "2015-01-05"
+}
+
+###
+
+### Register Student 4: Thanawat Rakpop
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "เด็กชาย ธนวัฒน์ รักป๊อป",
+    "en": "Master Thanawat Rakpop"
+  },
+  "email": "thanawat.r@gmail.com",
+  "password": "password1234",
+  "role": "student",
+  "phoneNumber": "0864445555",
+  "dateOfBirth": "2018-09-18"
+}
+
+###
+
+### Register Student 5: Peerapat Sondee
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "เด็กชาย พีรพัฒน์ สอนดี",
+    "en": "Master Peerapat Sondee"
+  },
+  "email": "peerapat.s@gmail.com",
+  "password": "password1234",
+  "role": "student",
+  "phoneNumber": "0865556666",
+  "dateOfBirth": "2019-11-30"
+}
+
+### Register Student 6: Suda Jaidee
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "เด็กหญิง สุดา ใจดี",
+    "en": "Miss Suda Jaidee"
+  },
+  "email": "suda.j@gmail.com",
+  "password": "password1234",
+  "role": "student",
+  "phoneNumber": "0871112222",
+  "dateOfBirth": "2016-05-14"
+}
+
+###
+
+### Register Student 7: Mali Meefimue
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "เด็กหญิง มะลิ มีฝีมือ",
+    "en": "Miss Mali Meefimue"
+  },
+  "email": "mali.m@gmail.com",
+  "password": "password1234",
+  "role": "student",
+  "phoneNumber": "0872223333",
+  "dateOfBirth": "2017-02-28"
+}
+
+###
+
+### Register Student 8: Pornthip Narak
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "เด็กหญิง พรทิพย์ น่ารัก",
+    "en": "Miss Pornthip Narak"
+  },
+  "email": "pornthip.n@gmail.com",
+  "password": "password1234",
+  "role": "student",
+  "phoneNumber": "0873334444",
+  "dateOfBirth": "2015-10-10"
+}
+
+###
+
+### Register Student 9: Chalisa Ruamjai
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "เด็กหญิง ชลิสา ร่วมใจ",
+    "en": "Miss Chalisa Ruamjai"
+  },
+  "email": "chalisa.r@gmail.com",
+  "password": "password1234",
+  "role": "student",
+  "phoneNumber": "0874445555",
+  "dateOfBirth": "2018-12-25"
+}
+
+###
+
+### Register Student 10: Nutchanart Sangsuwan
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "เด็กหญิง นุชนารถ แสงสุวรรณ",
+    "en": "Miss Nutchanart Sangsuwan"
+  },
+  "email": "nutchanart.s@gmail.com",
+  "password": "password1234",
+  "role": "student",
+  "phoneNumber": "0875556666",
+  "dateOfBirth": "2019-04-02"
+}
+
+### Register Teacher 1: Somsri Meefimue (Woman - Sukhumvit Branch)
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
+  "name": {
+    "th": "สมศรี มีฝีมือ",
+    "en": "Somsri Meefimue"
+  },
+  "email": "somsri.t@siampopmusic.com",
+  "password": "password1234",
+  "role": "teacher",
+  "phoneNumber": "0891112222",
+  "dateOfBirth": "1990-05-14"
+}
+
+###
+
+### Register Teacher 2: Natthawut Sondee (Man - Sukhumvit Branch)
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "schoolId": "6a56367027e89c61dbe3e84e",
   "name": {
     "th": "ณัฐวุฒิ สอนดี",
     "en": "Natthawut Sondee"
   },
-  "email": "natthawut.teacher@school.com",
-  "password": "teacherpassword123",
+  "email": "natthawut.t@siampopmusic.com",
+  "password": "password1234",
   "role": "teacher",
-  "phoneNumber": "0898765432",
-  "academicProfile": {
-    "teacherCertification": {
-      "certificationBody": "Yamaha",
-      "passedGrade": "Grade 5"
-    }
-  }
+  "phoneNumber": "0892223333",
+  "dateOfBirth": "1988-08-25"
 }
 
-### Register a new student with date of birth
+###
+
+### Register Teacher 3: Pimchanok Ruamjai (Woman - Chiang Mai Branch)
 POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "schoolId": "6a4684d8bbe327f841fbdcd3", 
+  "schoolId": "6a56367527e89c61dbe3e84f",
   "name": {
-    "th": "เด็กชาย ต่าย โคตรเซียน",
-    "en": "Mr. Tai Cortsien"
+    "th": "พิมพ์ชนก ร่วมใจ",
+    "en": "Pimchanok Ruamjai"
   },
-  "email": "tai.student@gmail.com",
-  "password": "studentpassword123",
-  "role": "student",
-  "phoneNumber": "0822222222",
-  "dateOfBirth": "1967-08-07",
-  "academicProfile": {
-    "studentTrack": [
-      {
-        "courseId": "6a4fa2b0ad1d8c1c237e6f64",
-        "currentLevel": 1
-      }
-    ]
-  }
-}
-
-### Register a new teacher with multi grade
-POST http://localhost:5000/api/auth/register
-Content-Type: application/json
-
-{
-  "schoolId": "6a4b9e674dd915784e7cf926", 
-  "name": {
-    "th": "สมชาย คั้งยัง",
-    "en": "Somchai Kangyang"
-  },
-  "email": "somchai.teacher@school.com",
-  "password": "password123",
+  "email": "pimchanok.t@siampopmusic.com",
+  "password": "password1234",
   "role": "teacher",
-  "phoneNumber": "0898765432",
-  "academicProfile": {
-    "teacherCertifications": [
-      {
-        "certificationBody": "ABRSM",
-        "passedGrade": "Grade 8 Piano Performance with Distinction"
-      },
-      {
-        "certificationBody": "Yamaha",
-        "passedGrade": "Grade 5 Instructor Certified Grade"
-      },
-      {
-        "certificationBody": "Trinity",
-        "passedGrade": "ATCL Recital Diploma"
-      }
-    ]
-  }
+  "phoneNumber": "0893334444",
+  "dateOfBirth": "1993-12-01"
 }
+
+
 
 ### Admin/Manager get user profile by ID
 GET http://localhost:5000/api/users/6a510011bf2a54a0212f2bf9
@@ -128,17 +322,174 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNGJhYzE1Y
   "schoolId": "6a4b9e674dd915784e7cf926"
 }
 
-### Manager/admin Levels up a student track or add new corse for student(need admin/manager token)
-PATCH http://localhost:5000/api/users/6a54f7df041a9cc7404dba21/academic-profile
+### Upgrade Track for Student 1: Somchai Kengkla (Piano Level 2)
+PATCH http://localhost:5000/api/users/6a563c9c27e89c61dbe3e858/academic-profile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTBmY2Y0YzYwMzUzNjk2NWU1NzUwOCIsImlhdCI6MTc4Mzk1MjQ5OX0.vgSdO0KsaH3q6LmiLIvbPYth1qGY-0FsMtCu7CyrlBI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDA0MzU0MX0.T8MBxsh6M2lWSDNZQUgnUvdB5KChlH6pDaKlR99Fc-w
 
 {
   "studentTrack": [
     {
-      "courseId": "6a4fa2b0ad1d8c1c237e6f64",
+      "courseId": "6a5647b582fb4ac5a6aec166",
       "currentLevel": 2,
-      "recordDate": "2026-07-13"
+      "recordDate": "2026-07-14",
+      "status": "active"
+    }
+  ]
+}
+
+###
+
+### Upgrade Track for Student 6: Suda Jaidee (Piano Level 1)
+PATCH http://localhost:5000/api/users/6a563d2827e89c61dbe3e85a/academic-profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDA0MzU0MX0.T8MBxsh6M2lWSDNZQUgnUvdB5KChlH6pDaKlR99Fc-w
+
+{
+  "studentTrack": [
+    {
+      "courseId": "6a5647b582fb4ac5a6aec166",
+      "currentLevel": 1,
+      "recordDate": "2026-07-14",
+      "status": "active"
+    }
+  ]
+}
+
+### Upgrade Track for Student 2: Anan Sookjai (Violin Level 1)
+PATCH http://localhost:5000/api/users/6a563c9427e89c61dbe3e857/academic-profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDA0MzU0MX0.T8MBxsh6M2lWSDNZQUgnUvdB5KChlH6pDaKlR99Fc-w
+
+{
+  "studentTrack": [
+    {
+      "courseId": "6a56483582fb4ac5a6aec16b",
+      "currentLevel": 1,
+      "recordDate": "2026-07-14",
+      "status": "active"
+    }
+  ]
+}
+
+###
+
+### Upgrade Track for Student 7: Mali Meefimue (Violin Level 2)
+PATCH http://localhost:5000/api/users/6a563d3527e89c61dbe3e85b/academic-profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDA0MzU0MX0.T8MBxsh6M2lWSDNZQUgnUvdB5KChlH6pDaKlR99Fc-w
+
+{
+  "studentTrack": [
+    {
+      "courseId": "6a56483582fb4ac5a6aec16b",
+      "currentLevel": 2,
+      "recordDate": "2026-07-14",
+      "status": "active"
+    }
+  ]
+}
+
+### Upgrade Track for Student 3: Kittisak Deemee (Guitar Level 1)
+PATCH http://localhost:5000/api/users/6a563c7b27e89c61dbe3e855/academic-profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDA0MzU0MX0.T8MBxsh6M2lWSDNZQUgnUvdB5KChlH6pDaKlR99Fc-w
+
+{
+  "studentTrack": [
+    {
+      "courseId": "6a56488482fb4ac5a6aec16e",
+      "currentLevel": 1,
+      "recordDate": "2026-07-14",
+      "status": "active"
+    }
+  ]
+}
+
+###
+
+### Upgrade Track for Student 8: Pornthip Narak (Guitar Level 1)
+PATCH http://localhost:5000/api/users/6a563d3d27e89c61dbe3e85c/academic-profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDA0MzU0MX0.T8MBxsh6M2lWSDNZQUgnUvdB5KChlH6pDaKlR99Fc-w
+
+{
+  "studentTrack": [
+    {
+      "courseId": "6a56488482fb4ac5a6aec16e",
+      "currentLevel": 1,
+      "recordDate": "2026-07-14",
+      "status": "active"
+    }
+  ]
+}
+
+### Upgrade Track for Student 4: Thanawat Rakpop (Kids Music Level 1)
+PATCH http://localhost:5000/api/users/6a563c8827e89c61dbe3e856/academic-profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDA0MzU0MX0.T8MBxsh6M2lWSDNZQUgnUvdB5KChlH6pDaKlR99Fc-w
+
+{
+  "studentTrack": [
+    {
+      "courseId": "6a5648d882fb4ac5a6aec171",
+      "currentLevel": 1,
+      "recordDate": "2026-07-14",
+      "status": "active"
+    }
+  ]
+}
+
+###
+
+### Upgrade Track for Student 5: Peerapat Sondee (Kids Music Level 1)
+PATCH http://localhost:5000/api/users/6a563cc727e89c61dbe3e859/academic-profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDA0MzU0MX0.T8MBxsh6M2lWSDNZQUgnUvdB5KChlH6pDaKlR99Fc-w
+
+{
+  "studentTrack": [
+    {
+      "courseId": "6a5648d882fb4ac5a6aec171",
+      "currentLevel": 1,
+      "recordDate": "2026-07-14",
+      "status": "active"
+    }
+  ]
+}
+
+###
+
+### Upgrade Track for Student 9: Chalisa Ruamjai (Kids Music Level 1)
+PATCH http://localhost:5000/api/users/6a563d4627e89c61dbe3e85d/academic-profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDA0MzU0MX0.T8MBxsh6M2lWSDNZQUgnUvdB5KChlH6pDaKlR99Fc-w
+
+{
+  "studentTrack": [
+    {
+      "courseId": "6a5648d882fb4ac5a6aec171",
+      "currentLevel": 1,
+      "recordDate": "2026-07-14",
+      "status": "active"
+    }
+  ]
+}
+
+###
+
+### Upgrade Track for Student 10: Nutchanart Sangsuwan (Kids Music Level 1)
+PATCH http://localhost:5000/api/users/6a563d4f27e89c61dbe3e85e/academic-profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDA0MzU0MX0.T8MBxsh6M2lWSDNZQUgnUvdB5KChlH6pDaKlR99Fc-w
+
+{
+  "studentTrack": [
+    {
+      "courseId": "6a5648d882fb4ac5a6aec171",
+      "currentLevel": 1,
+      "recordDate": "2026-07-14",
+      "status": "active"
     }
   ]
 }
