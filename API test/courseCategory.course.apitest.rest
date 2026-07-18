@@ -111,16 +111,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkM
   "lessonType": "private",
   "maxCapacity": 1,
   "levels": [
-    { "level": 1, "levelName": "Primer Course Book 1", "price": 3200 },
-    { "level": 2, "levelName": "Beginner Course Book 2", "price": 3200 },
-    { "level": 3, "levelName": "Intermediate Grade 1", "price": 3500 },
-    { "level": 4, "levelName": "Intermediate Grade 2", "price": 3800 }
+    { "level": 1, "levelName": "Primer Course Book 1", "price": 3200, "baseTeacherPayout": 500 },
+    { "level": 2, "levelName": "Beginner Course Book 2", "price": 3200, "baseTeacherPayout": 500 },
+    { "level": 3, "levelName": "Intermediate Grade 1", "price": 3500, "baseTeacherPayout": 700 },
+    { "level": 4, "levelName": "Intermediate Grade 2", "price": 3800, "baseTeacherPayout": 800 }
   ]
 }
 
 ###
 
-### E2. Create Course: Violin Course (Private 1-on-1)
+### E2. Create Course: Violin Course (semi-private, 1-2)
 POST http://localhost:5000/api/courses
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzODQ2NH0.-yGnStIiUHM_ZJQCIqBglERyA5srGghKvw7zzI8SioY
@@ -145,16 +145,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkM
   },
   "durationInMinutes": 60,
   "lessonType": "private",
-  "maxCapacity": 1,
+  "maxCapacity": 2,
   "levels": [
-    { "level": 1, "levelName": "Suzuki Method Vol.1", "price": 3400 },
-    { "level": 2, "levelName": "Suzuki Method Vol.2", "price": 3600 }
+    { "level": 1, "levelName": "Suzuki Method Vol.1", "price": 3400, "baseTeacherPayout": 500 },
+    { "level": 2, "levelName": "Suzuki Method Vol.2", "price": 3600,"baseTeacherPayout": 600 }
   ]
 }
 
 ###
 
-### E3. Create Course: Folk Guitar Course (Private 1-on-1)
+### E3. Create Course: Folk Guitar Course (Group: max 5 students)
 POST http://localhost:5000/api/courses
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDAzODQ2NH0.-yGnStIiUHM_ZJQCIqBglERyA5srGghKvw7zzI8SioY
@@ -179,10 +179,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkM
   },
   "durationInMinutes": 60,
   "lessonType": "private",
-  "maxCapacity": 1,
+  "maxCapacity": 5,
   "levels": [
-    { "level": 1, "levelName": "Acoustic Foundation Tier 1", "price": 2800 },
-    { "level": 2, "levelName": "Acoustic Foundation Tier 2", "price": 3000 }
+    { "level": 1, "levelName": "Acoustic Foundation Tier 1", "price": 2800, "baseTeacherPayout": 500 },
+    { "level": 2, "levelName": "Acoustic Foundation Tier 2", "price": 3000, "baseTeacherPayout": 550 }
   ]
 }
 
@@ -215,8 +215,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkM
   "lessonType": "group",
   "maxCapacity": 10,
   "levels": [
-    { "level": 1, "levelName": "Junior Rhythm Stage A", "price": 2200 },
-    { "level": 2, "levelName": "Junior Rhythm Stage B", "price": 2400 }
+    { "level": 1, "levelName": "Junior Rhythm Stage A", "price": 2200, "baseTeacherPayout": 500 },
+    { "level": 2, "levelName": "Junior Rhythm Stage B", "price": 2400, "baseTeacherPayout": 500 }
   ]
 }
 

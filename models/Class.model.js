@@ -37,6 +37,11 @@ const classStudentSnapshotSchema = new mongoose.Schema({
       "Payout snapshot cannot be lower than 0 / ค่าตอบแทนครูต้องไม่ต่ำกว่า 0",
     ],
   },
+  priceSnapshot: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
 });
 
 const classSchema = new mongoose.Schema(

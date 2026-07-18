@@ -1,35 +1,66 @@
 import { Class } from "../models/Class.model.js";
 import { Course } from "../models/Course.model.js";
+import { Zone } from "../models/Zone.model.js";
 
-// @desc    Schedule a new class with double-booking checks
+// @desc    Schedule a new class with historical financial snapshotting and room/teacher conflict checks
 // @route   POST /api/classes
-// @access  Private (Admin & Teacher only)
+// @access  Private (Admin & Manager only)
 export const createClass = async (req, res, next) => {
   try {
-    const {
-      courseId,
-      teacherId,
-      studentIds,
-      startTime,
-      endTime,
-      roomName,
-      note,
-    } = req.body || {};
+    const { teacherId, enrolledStudents, startTime, endTime, zoneId, note } =
+      req.body || {};
     const schoolId = req.user.activeSchool;
 
-    //Convert date in req to javascript date objects
-    const start = new Date(startTime);
-    const end = new Date(endTime);
-
-    //Validate if start time was before end time
-    if (start >= end) {
+    if (
+      !teacherId ||
+      !enrolledStudents ||
+      !Array.isArray(enrolledStudents) ||
+      enrolledStudents.length === 0 ||
+      !startTime ||
+      !endTime ||
+      !zoneId
+    ) {
       res.status(400);
       throw new Error(
-        "Start time must before end time / เวลาเริ่มคลาสต้องก่อนหน้าเวลาเลิกคลาส",
+        "Missing required class parameters / กรุณาระบุข้อมูลคลาสเรียนให้ครบถ้วน",
       );
     }
 
-    //Check if teacher is available for this new class
+    // Convert incoming date strings into real JavaScript Date objects
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+
+    if (start >= end) {
+      res.status(400);
+      throw new Error(
+        "Start time must before end time / เวลาเริ่มคลาสต้องอยู่ก่อนเวลาหมดคลาส",
+      );
+    }
+    // 2. 🔐 ROOM ZONE VALIDATION & CAPACITY THRESHOLD ENFORCEMENT
+    const targetZone = await Zone.findById(zoneId);
+    if (
+      !targetZone ||
+      targetZone.schoolId.toString() !== schoolId.toString() ||
+      !targetZone.isActive
+    ) {
+      res.status(404);
+      throw new Error(
+        "Target zone not found or inactice / ไม่พบข้อมูลโซน-ห้องเรียนที่ระบุ หรือไม่เปิดใช้งาน",
+      );
+    }
+
+    if (targetZone.zoneType === "classroom") {
+      const studentHeadCount = enrolledStudents.length;
+      if (studentHeadCount > targetZone.maxStudentCapacity) {
+        res.status(404);
+        throw new Error(
+          `Room capacity exceeded! Max: ${targetZone.maxStudentCapacity} / จำนวนนักเรียนรับได้สูงสุด ไม่เกิน ${targetZone.maxStudentCapacity} คน`,
+        );
+      }
+    }
+
+    // 3. 🔐 TEACHER & ZONE RESOURCE DOUBLE-BOOKING MATRIX CHECKS
+    // Check if teacher is already booked anywhere else at this time slot
     const teacherConflict = await Class.findOne({
       teacherId,
       status: "scheduled",
@@ -39,39 +70,79 @@ export const createClass = async (req, res, next) => {
     if (teacherConflict) {
       res.status(400);
       throw new Error(
-        "Teacher is already booked for another class / ครูมีคลาสสอนในเวลานีเแล้ว",
+        "Teacher is already booked for another class at this time! / ครูผู้สอนมีคลาสสอนในช่วงเวลานี้แล้ว",
       );
     }
 
-    //Check is room is available for this new class
-    const roomConflict = await Class.findOne({
-      schoolId,
+    // Check if this physical room zone resource is already occupied
+    const zoneConflict = await Class.findOne({
+      zoneId,
       status: "scheduled",
-      $or: [{ "roomName.en": roomName?.en }, { "roomName.th": roomName?.th }],
       startTime: { $lt: end },
       endTime: { $gt: start },
     });
-    if (roomConflict) {
+    if (zoneConflict) {
       res.status(400);
       throw new Error(
-        "Room is already in use by another class / ห้องเรียนถูกกำหนดใช้กับคลาสอื่นแล้ว",
+        "This zone is already in use by other class / ห้องเรียนนี้มีกำหนดคลาสเรียนในเวลานี้แล้ว",
       );
     }
 
-    //Create new class
+    // 4. 💸 INITIATE AUTOMATED FINANCIAL SNAPSHOTTING OPERATION LOOP
+    const finalizedStudentSnapshots = [];
+    for (const item of enrolledStudents) {
+      if (!item.studentId || !item.courseId || !item.level) {
+        res.status(400);
+        throw new Error(
+          "Invalid student array parameter fields / ข้แมูลการเรียนของนักเรียนไม่ถูกต้อง",
+        );
+      }
+
+      const parentCourse = await Course.findById(item.courseId);
+      if (!parentCourse) {
+        res.status(404);
+        throw new Error(
+          "Parent course profile not found / ไม่พบข้อมูลวิชาเรียนนี้",
+        );
+      }
+
+      // Find the matching configuration tier index for the requested level
+      const matchingLevelTier = parentCourse.levels.find(
+        (lvl) => lvl.level === Number(item.level),
+      );
+
+      if (!matchingLevelTier) {
+        res.status(400);
+        throw new Error(
+          `Requested level (${item.level}) is not defined in this course / ไม่พบข้อมูลเลเวล (${item.level}) ในคอร์สเรียนนี้`,
+        );
+      }
+
+      // Lock down the immutable historical price and teacher fee payout numbers into this student node
+      finalizedStudentSnapshots.push({
+        studentId: item.studentId,
+        courseId: item.courseId,
+        level: Number(item.level),
+        // 💡 EXPLICITLY SNAPSHOTTED: Freezes these numbers forever protecting against future course configuration changes
+        baseTeacherPayout: matchingLevelTier.baseTeacherPayout,
+        priceSnapshot: matchingLevelTier.price,
+      });
+    }
+
+    // 5. Create the Class timetable record document in MongoDB
     const newClass = await Class.create({
       schoolId,
-      courseId,
       teacherId,
-      studentIds,
+      enrolledStudents: finalizedStudentSnapshots,
       startTime: start,
       endTime: end,
-      roomName,
+      zoneId,
       note,
     });
+
     return res.status(201).json({
       success: true,
-      message: "Class scheduled successfully / ลงตารางเวลาคลาสเรียนใหม่แล้ว",
+      message: "Class scheduled successfully / ลงเวลาคลาสเรียนใหม่สำเร็จ",
       data: newClass,
     });
   } catch (error) {
@@ -84,12 +155,13 @@ export const createClass = async (req, res, next) => {
 // @access  Private
 export const getTeacherClasses = async (req, res, next) => {
   try {
-    const { teachId } = req.params;
+    const { teacherId } = req.params;
 
-    const classes = await Class.find({ teachId })
+    const classes = await Class.find({ teacherId })
       .populate("schoolId", "SchoolName")
-      .populate("courseId", "title lessonType durationInMinutes")
-      .populate("studentIds", "name email -password")
+      .populate("zoneId", "zoneName zoneType")
+      .populate("enrolledStudents.studentId", "name email role phoneNumber")
+      .populate("enrollStudents.courseId", "title durationInMinutes lessonType")
       .sort({ startTime: 1 });
 
     return res
@@ -105,49 +177,81 @@ export const getTeacherClasses = async (req, res, next) => {
 // @access  Private (Admin & Teacher only)
 export const addStudentToClass = async (req, res, next) => {
   try {
-    const { studentId } = req.body || {};
     const classId = req.params.id;
+    const { studentId, courseId, level } = req.body || {};
 
-    if (!studentId) {
+    if (!studentId || !courseId || !level) {
       res.status(400);
-      throw new Error("Please provide a student ID / กรุณาระบุรหัสนักเรียน");
+      throw new Error(
+        "Missing enrollment fields / กรุณาระบุรหัสนักเรียน, คอร์ส, เลเวล ให้ครบถ้วน",
+      );
     }
 
-    const targetClass = await Class.findById(classId).populate("courseId");
+    const targetClass = await Class.findById(classId).populate("zoneId");
     if (!targetClass) {
-      res.status(404);
-      throw new Error("Class timetable not found / ไม่พบข้อมูลคลาสเรียนนี้");
+      throw new Error("Class not found / ไม่พบข้อมูลคลาสเรียน");
     }
 
-    const isAlreadyEnrolled = targetClass.studentIds.some(
-      (id) => id.toString() === studentId,
+    const isAlreadyEnrolled = targetClass.enrolledStudents.some(
+      (student) => student.studentId.toString() === studentId,
     );
     if (isAlreadyEnrolled) {
-      res.status(401);
-      throw new Error(
-        "This student is already enrolled in this class / นักเรียนรหัสนี้มีรายชื่อในคลาสนี้แล้ว",
-      );
-    }
-
-    const currentEnrolmentCount = targetClass.studentIds.length;
-    const maxAllowedCapacity = targetClass.courseId.maxCapacity;
-    if (currentEnrolmentCount >= maxAllowedCapacity) {
       res.status(400);
       throw new Error(
-        `This class is already full: ${maxAllowedCapacity} / จำนวนนักเรียนในคลาสนี้เต็มแล้ว (สูงสุด ${maxAllowedCapacity} คน)`,
+        "This student is already enrolled in this class / นักเรียนคนนี้มีชื่ออยู่ในคลาสนี้แล้ว",
       );
     }
 
-    //Push new student to class
+    if (targetClass.zoneId && targetClass.zoneId.zoneType === "classroom") {
+      const currentEnrollmentCount = targetClass.enrolledStudents.length;
+      const maxAllowCapacity = targetClass.zoneId.maxStudentCapacity;
+
+      if (currentEnrollmentCount >= maxAllowCapacity) {
+        res.status(400);
+        throw new Error(
+          `Room capacity is full! Max: ${maxAllowCapacity} / จำนวนนักเรียนเต็มคลาสแล้ว! (${maxAllowCapacity} คน) `,
+        );
+      }
+    }
+
+    const parentCourse = await Course.findById(courseId);
+    if (!parentCourse) {
+      res.status(404);
+      throw new Error(
+        "Parent course profile not found! / ไม่พบข้อมูลคอร์สเรียนวิชานี้",
+      );
+    }
+
+    const matchingLevelTier = parentCourse.levels.find(
+      (lvl) => lvl.level === Number(level),
+    );
+    if (!matchingLevelTier) {
+      res.status(400);
+      throw new Error(
+        `Level ${level} is not defined in this course / ไม่มีเลเวล ${level} ในคอร์สเรียนนี้`,
+      );
+    }
+
+    const newStudentSnapShot = {
+      studentId,
+      courseId,
+      level: Number(level),
+      baseTeacherPayout: matchingLevelTier.baseTeacherPayout,
+      priceSnapshot: matchingLevelTier.price,
+    };
+
     const updateClass = await Class.findByIdAndUpdate(
       classId,
-      { $addToSet: { studentIds: studentId } },
+      { $push: { enrolledStudents: newStudentSnapShot } },
       { new: true, runValidators: true },
-    ).populate("studentIds", "name email -password");
+    )
+      .populate("enrolledStudents.studentId", "name email role")
+      .populate("enrolledStudents.courseId", "title");
+
     return res.status(200).json({
       success: true,
       message:
-        "Student add to class successfully / เพิ่มนักเรียนเข้าคลาสสำเร็จ",
+        "Student added to class successfully / เพิ่มนักเรียนเข้าคลาสเรียนสำเร็จ",
       data: updateClass,
     });
   } catch (error) {
