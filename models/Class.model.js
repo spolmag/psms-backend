@@ -26,6 +26,17 @@ const classStudentSnapshotSchema = new mongoose.Schema({
       "Level must be at least 1 / เลเวลต้องเริ่มระบุที่เลเวล 1 เป็นอย่างน้อย",
     ],
   },
+  baseTeacherPayout: {
+    type: Number,
+    required: [
+      true,
+      "Must get snapshot of base teacher payout / ต้องบันทึกค่าตอบแทนครู",
+    ],
+    min: [
+      0,
+      "Payout snapshot cannot be lower than 0 / ค่าตอบแทนครูต้องไม่ต่ำกว่า 0",
+    ],
+  },
 });
 
 const classSchema = new mongoose.Schema(
@@ -70,9 +81,13 @@ const classSchema = new mongoose.Schema(
         "Please add a class end time / กรุณาระบุเวลาหมดคลาสเรียน",
       ],
     },
-    roomName: {
-      th: { type: String, required: [true, "กรุณาระบุห้องเรียน"] },
-      en: { type: String, required: [true, "Please add a classroom name"] },
+    zoneId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Zone",
+      required: [
+        true,
+        "Class must be assiged to zone location / คลาสเรียนจะต้องระบุโซนห้องเรียน",
+      ],
     },
     status: {
       type: String,
@@ -91,7 +106,7 @@ const classSchema = new mongoose.Schema(
 
 // High-utility compound database indexes to prevent room and teacher double-bookings across branches
 classSchema.index({ teacherId: 1, startTime: 1, endTime: 1 });
-classSchema.index({ schoolId: 1, roomName: 1, startTime: 1, endTime: 1 });
+classSchema.index({ zoneId: 1, startTime: 1, endTime: 1 });
 // Optimized for querying historical payroll tiers by student levels dynamically later
 classSchema.index({ schoolId: 1, "enrolledStudents.level": 1, status: 1 });
 

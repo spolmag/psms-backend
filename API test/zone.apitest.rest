@@ -1,0 +1,56 @@
+### Admin/manager login to get token
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "spolmag@gmail.com",
+  "password": "password1234"
+}
+
+### G1. Create Zone 1: GP1 (Classroom Type with Max Capacity)
+POST http://localhost:5000/api/zones
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM2OTE1NX0.-KEgxVt6adOZR1ZWS9rVu6ZFxbdSYbKTYRo2utg382w
+
+{
+  "zoneName": {
+    "th": "ห้องแกรนด์เปียโน 1",
+    "en": "Grand Piano 1"
+  },
+  "zoneType": "classroom",
+  "maxStudentCapacity": 1,
+  "note": "Equipped with Yamaha C3 Grand Piano."
+}
+
+### G2. Create Zone 2: Junior Music room (Group Classroom Type)
+POST http://localhost:5000/api/zones
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM2OTE1NX0.-KEgxVt6adOZR1ZWS9rVu6ZFxbdSYbKTYRo2utg382w
+
+{
+  "zoneName": {
+    "th": "ห้องดนตรีเด็กเล็ก",
+    "en": "Junior Music room"
+  },
+  "zoneType": "classroom",
+  "maxStudentCapacity": 12,
+  "note": "Equipped with keyboard, auxiliary percussion instruments and rhythm movement mats."
+}
+
+### G3. Create Zone 3: Teacher room (Office Type - Automatically Drops Max Student Capacity)
+POST http://localhost:5000/api/zones
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM2OTY0NX0.lSvi2oHwv55pm74e3aj12DmLBtNkM8LYIEscQhtIu1I
+
+{
+  "zoneName": {
+    "th": "ห้องพักครู",
+    "en": "Teacher room"
+  },
+  "zoneType": "teachers_room",
+  "note": "Restricted administrative zone for branch payroll reports processing."
+}
+
+### G4. Fetch All Active Zones in the Active Branch Workspace View Context
+GET http://localhost:5000/api/zones
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM2OTY0NX0.lSvi2oHwv55pm74e3aj12DmLBtNkM8LYIEscQhtIu1I

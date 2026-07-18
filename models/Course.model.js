@@ -18,6 +18,14 @@ const levelSchema = new mongoose.Schema({
     required: [true, "Please add a price for this level / กรุณาระบุค่าเรียน"],
     min: [0, "Price cannot be lower than 0 / ค่าเรียน ต้องไม่ต่ำกว่า 0"],
   },
+  baseTeacherPayout: {
+    type: Number,
+    required: [
+      true,
+      "Please add a teacher base payout / กรุณาระบุค่าตอบแทนพื้นฐานสำหรับครู",
+    ],
+    min: [0, "Payout can not be lower than 0 / ค่าตอบแทนครูต้องไม่ต่ำกว่า 0"],
+  },
 });
 
 const courseSchema = new mongoose.Schema(
