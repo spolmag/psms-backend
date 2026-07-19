@@ -1,0 +1,28 @@
+//Need user as admin or teacher role to attendance check sheet
+### User login
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "spolmag@gmail.com",
+  "password": "password1234"
+}
+
+
+### Manager logs attendance for a teacher's class (Substitute/Forgetfulness scenario)
+POST http://localhost:5000/api/attendance
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDQzODMxN30.7ZIxmeYih-LPyInQuCNxH2SXN-zAY8QNLeAwT82lx44
+
+{
+  "classId": "6a5b91cfb5f53f8e39316489",
+  "teacherId": "6a563f9327e89c61dbe3e85f",
+  "note": "Logged by front-desk manager on behalf of Teacher Somsri.",
+  "records": [
+    { "studentId": "6a563c7b27e89c61dbe3e855", "status": "present" },
+    { "studentId": "6a563c8827e89c61dbe3e856", "status": "present" },
+    { "studentId": "6a563c9427e89c61dbe3e857", "status": "present" },
+    { "studentId": "6a563c9c27e89c61dbe3e858", "status": "present" },
+    { "studentId": "6a563cc727e89c61dbe3e859", "status": "absent", "reason": "Sick with high fever" }
+  ]
+}
