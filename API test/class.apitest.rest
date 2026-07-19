@@ -83,3 +83,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkM
 ### Get teacher all classes
 GET http://localhost:5000/api/classes/teacher/6a4908a2c0edb72d022e0419
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNGJhYzE1YzdlZDZkOTExN2M4NTc1MSIsImlhdCI6MTc4MzQxODY0N30.lnNuo6yYxNLOv0chUJtbiG7a6Pat7n3P4O5hM1STNh0
+
+### 1. Manager Marks the Completed Group Class Session (Unlocks Payout Engine processing)
+PATCH http://localhost:5000/api/classes/6a5b8fa2b5f53f8e3931647e/status
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM4NDk2OH0.eyUZ_naGULuPo1X3-a0CY5W_47LacjbSvuNvRKSp3Gw
+
+{
+  "status": "completed"
+}
+
+###
+
+### 2. Alternative Case: Cancel a Class Session completely
+PATCH http://localhost:5000/api/classes/6a5b91cfb5f53f8e39316489/status
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM4NDk2OH0.eyUZ_naGULuPo1X3-a0CY5W_47LacjbSvuNvRKSp3Gw
+
+{
+  "status": "cancelled"
+}

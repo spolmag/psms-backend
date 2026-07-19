@@ -3,6 +3,7 @@ import {
   createClass,
   getTeacherClasses,
   addStudentToClass,
+  updateClassStatus,
 } from "../controllers/classControllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
@@ -20,4 +21,10 @@ router.patch(
   protect,
   restrictTo("admin", "teacher", "manager"),
   addStudentToClass,
+);
+router.patch(
+  "/:id/status",
+  protect,
+  restrictTo("admin", "manager"),
+  updateClassStatus,
 );

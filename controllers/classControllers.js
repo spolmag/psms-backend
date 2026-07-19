@@ -258,3 +258,43 @@ export const addStudentToClass = async (req, res, next) => {
     return next(error);
   }
 };
+
+// @desc    Update the operational status of a scheduled class (Admin & Manager only)
+// @route   PATCH /api/classes/:id/status
+// @access  Private (Admin & Manager only)
+export const updateClassStatus = async (req, res, next) => {
+  try {
+    const classId = req.params.id;
+    const { status } = req.body || {};
+    const schoolId = req.user.activeSchool;
+
+    // 1. Status Payload Validation
+    if (!status || !["scheduled", "completed", "cancelled"].includes(status)) {
+      res.status(400);
+      throw new Error(
+        "Please provide a valid status (scheduled, completed, cancelled) / กรุณาระบุสถานะคลาสเรียน ",
+      );
+    }
+
+    // 2. Fetch target class and verify it belongs to the manager's current active school branch
+    const targetClass = await Class.findById(classId);
+    if (!targetClass) {
+      res.status(404);
+      throw new Error(
+        "Class session not found in this branch / ไม่พบคลาสเรียนที่ระบุในสาขานี้",
+      );
+    }
+
+    // 3. Update the operational state string
+    targetClass.status = status;
+    await targetClass.save();
+
+    return res.status(200).json({
+      success: true,
+      message: `Class status updated to '${status}' successfully / เปลี่ยนสถานะคลาสเรียนเรียบร้อยแล้ว`,
+      data: targetClass,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
