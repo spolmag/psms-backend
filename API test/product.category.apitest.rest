@@ -1,0 +1,190 @@
+### Create Web Store Category: Textbooks
+POST http://localhost:5000/api/product-categories
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM4NDk2OH0.eyUZ_naGULuPo1X3-a0CY5W_47LacjbSvuNvRKSp3Gw
+
+{
+  "name": {
+    "th": "กีตาร์โปร่ง-โฟล์ค",
+    "en": "Acoustic folk guitar"
+  },
+  "description": {
+    "th": "กีตาร์โปร่ง-สายเหล็ก",
+    "en": "Acoustic folk guitar-steel strings"
+  }
+}
+
+### Get all product categories
+GET http://localhost:5000/api/product-categories
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM4NDk2OH0.eyUZ_naGULuPo1X3-a0CY5W_47LacjbSvuNvRKSp3Gw
+
+### 1. Register a Retail Sales Product (VAT Exempt Textbook in Stock Zone)
+POST http://localhost:5000/api/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM4NDk2OH0.eyUZ_naGULuPo1X3-a0CY5W_47LacjbSvuNvRKSp3Gw
+
+{
+  "productCategoryId": "6a5ccd6d4f2380a47db38475",
+  "currentZoneId": "6a5dbc95b11ab6b46b3a9811",
+  "productName": {
+    "th": "หนังสือเรียนเปียโนดนตรีสร้างสรรค์ เล่ม 1",
+    "en": "Junior Creative Piano Method - Book 1"
+  },
+  "description": {
+    "th": [
+      "แบบเรียนเปียโนปูพื้นฐานการอ่านโน้ตสากลสำหรับเด็กเล็ก",
+      "มาพร้อมภาพประกอบระบายสีสีสันสวยงามกระตุ้นความจำ"
+    ],
+    "en": [
+      "Comprehensive piano notation sight-reading blueprint for beginners.",
+      "Features interactive colorful illustration worksheets for memory triggers."
+    ]
+  },
+  "brand": "Siam Pop Publishing",
+  "modelName": "SP-P1",
+  "barcode": "978-616-99999-0-1",
+  "costPrice": 140,
+  "retailPrice": 320,
+  "isVatEnabled": false,
+  "stockCount": 30
+}
+
+###
+
+### 2. Register a Classroom Asset (Premium Grand Piano with Serial Number in Studio Zone)
+POST http://localhost:5000/api/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM4NDk2OH0.eyUZ_naGULuPo1X3-a0CY5W_47LacjbSvuNvRKSp3Gw
+
+{
+  "productCategoryId": "6a5cce124f2380a47db38476",
+  "currentZoneId": "6a5b50229c979cce44b25691",
+  "productName": {
+    "th": "เปียโนแกรนด์สตูดิโอคลาสสิก",
+    "en": "Yamaha C3 Studio Grand Piano"
+  },
+  "description": {
+    "th": [
+      "เครื่องดนตรีส่วนกลางประจำห้องปฏิบัติการแกรนด์เปียโน 01",
+      "ให้โทนเสียงกังวานลึกระดับคอนเสิร์ตสำหรับชั้นเรียนระดับสูง"
+    ],
+    "en": [
+      "Primary fixed internal core asset stationed in Grand Piano Studio 01.",
+      "Delivers clear concert-tier resonance and feedback dynamics for advanced tracks."
+    ]
+  },
+  "purpose": "equipment",
+  "brand": "Yamaha",
+  "modelName": "C3",
+  "serialNumber": "YMH-C3-2026-8891A",
+  "costPrice": 450000,
+  "retailPrice": 620000,
+  "isVatEnabled": true,
+  "stockCount": 1
+}
+
+###
+
+### 1. Register a product with muti purpose and zone
+POST http://localhost:5000/api/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM4NDk2OH0.eyUZ_naGULuPo1X3-a0CY5W_47LacjbSvuNvRKSp3Gw
+
+{
+  "productCategoryId": "6a5ccd6d4f2380a47db38475",
+  "currentZoneId": "6a5dbc95b11ab6b46b3a9811",
+  "productName": {
+    "th": "หนังสือเรียนเปียโนดนตรีสร้างสรรค์ เล่ม 1",
+    "en": "Junior Creative Piano Method - Book 1"
+  },
+  "description": {
+    "th": [
+      "แบบเรียนเปียโนปูพื้นฐานการอ่านโน้ตสากลสำหรับเด็กเล็ก",
+      "มาพร้อมภาพประกอบระบายสีสีสันสวยงามกระตุ้นความจำ"
+    ],
+    "en": [
+      "Comprehensive piano notation sight-reading blueprint for beginners.",
+      "Features interactive colorful illustration worksheets for memory triggers."
+    ]
+  },
+  "brand": "Siam Pop Publishing",
+  "modelName": "SP-P1",
+  "barcode": "978-616-99999-0-1",
+  "costPrice": 140,
+  "retailPrice": 320,
+  "isVatEnabled": false,
+  "stockCount": 30
+}
+
+### 3. Fetch Web Store Catalog View (Filter strictly for retail items 'for sales')
+GET http://localhost:5000/api/products?purpose=sales
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM4NDk2OH0.eyUZ_naGULuPo1X3-a0CY5W_47LacjbSvuNvRKSp3Gw
+
+
+### 1. Register a product-F-310 guitar with serial number
+POST http://localhost:5000/api/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM4NDk2OH0.eyUZ_naGULuPo1X3-a0CY5W_47LacjbSvuNvRKSp3Gw
+
+{
+  "productCategoryId": "6a5ccec84f2380a47db38478",
+  "currentZoneId": "6a5b7129cc3ba6053550efb6",
+  "productName": {
+    "th": "`F-310",
+    "en": "F-310"
+  },
+  "description": {
+    "th": [
+      "กีตาร์โปร่งสายเหล็ก สำหรับผู้เริ่มต้น",
+      "คุณภาพมาตรฐาน Yamaha"
+    ],
+    "en": [
+      "Acoustic folk guitar for beginner.",
+      "With Yamaha guitar standard."
+    ]
+  },
+  "brand": "Yamaha",
+  "modelName": "F-310",
+  "barcode": "123-456-78901-2-3",
+  "serialNumber": "f31000005",
+  "costPrice": 3500,
+  "retailPrice": 4200,
+  "isVatEnabled": true,
+  "stockCount": 1
+}
+
+### 1. Register a product-F-310 guitar without serial number
+POST http://localhost:5000/api/products
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM4NDk2OH0.eyUZ_naGULuPo1X3-a0CY5W_47LacjbSvuNvRKSp3Gw
+
+{
+  "productCategoryId": "6a5ccec84f2380a47db38478",
+  "currentZoneId": "6a5dc33fffc635d15efbfee9",
+  "productName": {
+    "th": "`F-310",
+    "en": "F-310"
+  },
+  "description": {
+    "th": [
+      "กีตาร์โปร่งสายเหล็ก สำหรับผู้เริ่มต้น",
+      "คุณภาพมาตรฐาน Yamaha"
+    ],
+    "en": [
+      "Acoustic folk guitar for beginner.",
+      "With Yamaha guitar standard."
+    ]
+  },
+  "brand": "Yamaha",
+  "modelName": "F-310",
+  "barcode": "123-456-78901-2-3",
+  "serialNumber": "f310000006",
+  "costPrice": 3500,
+  "retailPrice": 4200,
+  "isVatEnabled": true,
+  "stockCount": 1
+}
+
+### 4. Admin/Manager Fetches Unified Branch Stock Report Summary
+GET http://localhost:5000/api/products/stock-summary/Yamaha/F-310
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM4NDk2OH0.eyUZ_naGULuPo1X3-a0CY5W_47LacjbSvuNvRKSp3Gw

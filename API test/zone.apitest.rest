@@ -81,6 +81,20 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkM
   "note": "Violin classroom 1."
 }
 
+### G3. Create Zone 3: Stock room
+POST http://localhost:5000/api/zones
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM2OTY0NX0.lSvi2oHwv55pm74e3aj12DmLBtNkM8LYIEscQhtIu1I
+
+{
+  "zoneName": {
+    "th": "โชว์รูม",
+    "en": "Showroom"
+  },
+  "zoneType": "showroom",
+  "note": "พื้นที่โชว์สินค้า"
+}
+
 ### G4. Fetch All Active Zones in the Active Branch Workspace View Context
 GET http://localhost:5000/api/zones
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NDM2OTY0NX0.lSvi2oHwv55pm74e3aj12DmLBtNkM8LYIEscQhtIu1I

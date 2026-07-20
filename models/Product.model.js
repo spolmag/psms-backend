@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ProductCategory } from "./ProductCategory.model";
+import { ProductCategory } from "./ProductCategory.model.js";
 
 const productSchema = new mongoose.Schema(
   {
@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema(
         "Product must belong to a school branch / สินค้า จะต้องระบุสาขาโรงเรียน",
       ],
     },
-    ProductCategoryId: {
+    productCategoryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ProductCategory",
       required: [
@@ -28,7 +28,7 @@ const productSchema = new mongoose.Schema(
       ],
     },
     productName: {
-      th: { type: String, required: [true, โปรดระบุชื่อสินค้า] },
+      th: { type: String, required: [true, "โปรดระบุชื่อสินค้า"] },
       en: { type: String, required: [true, "Please add a product name"] },
     },
     purpose: {
