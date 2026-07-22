@@ -70,6 +70,13 @@ const productSchema = new mongoose.Schema(
       min: [0, "Stock can not below 0"],
       default: 1,
     },
+    reservedCount: {
+      //This for freeze stock quantity when issue invoice - lock this quantity until invoice status change to "paid" or "void"
+      type: Number,
+      required: true,
+      min: [0, "Resered count can not below 0"],
+      default: 0,
+    },
     isActive: {
       type: Boolean,
       default: true,

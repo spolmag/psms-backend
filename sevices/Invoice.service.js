@@ -2,6 +2,52 @@ import { Invoice } from "../models/Invoice.model.js";
 import { School } from "../models/School.model.js";
 import { Product } from "../models/Product.model.js";
 
+/**
+ * Advanced Soft-Lock Stock Reservation Engine
+ * Handles atomic shifting between stockCount and reservedCount based on transitions
+ * @param {Object} invoice - The full invoice document
+ * @param {String} action - 'RESERVE', 'RELEASE', 'CONFIRM_PAYMENT', 'VOID_PAID'
+ */
+export const manageStockReservationService = async (invoice, action) => {
+  if (!invoice.items || invoice.items.length === 0) return;
+
+  await Promise.all(
+    invoice.items.map(async (item) => {
+      if (item.itemType !== "RETAIL_STOCK") return;
+
+      let updateQuery = {};
+
+      switch (action) {
+        case "RESERVE":
+          // Invoice Created (DRAFT/SENT): Lock it down by pushing reservations UP
+          updateQuery = { $inc: { reservedCount: item.quantity } };
+          break;
+
+        case "RELEASE":
+          // Invoice deleted or overwritten before payment: Pull reservations DOWN
+          updateQuery = { $inc: { reservedCount: -item.quantity } };
+          break;
+
+        case "CONFIRM_PAYMENT":
+          // Invoice Paid: Pull reservations DOWN, and pull physical stock DOWN
+          updateQuery = {
+            $inc: { reservedCount: -item.quantity, stockCount: -item.quantity },
+          };
+          break;
+
+        case "VOID_PAID":
+          // Paid Invoice gets voided: Add physical stock back directly
+          updateQuery = { $inc: { stockCount: item.quantity } };
+          break;
+      }
+      // Execute update directly in MongoDB atomically
+      await Product.findByIdAndUpdate(item.referenceId, updateQuery, {
+        runValidators: true,
+      });
+    }),
+  );
+};
+
 export const createInvoiceService = async (invoiceData) => {
   const { schoolId, userId, dueDate, items, discount = 0, note } = invoiceData;
 
@@ -13,7 +59,7 @@ export const createInvoiceService = async (invoiceData) => {
 
   // 1. Fetch dynamic school settings from the database *Note for VAT rate
   const school = await School.findById(schoolId);
-  if (!schoolId) {
+  if (!school) {
     throw new Error("School branch not found / ไม่พบข้อมูลสาขา-โรงเรียน");
   }
 
@@ -27,7 +73,7 @@ export const createInvoiceService = async (invoiceData) => {
   const processedItems = await Promise.all(
     items.map(async (item) => {
       const totalPrice = item.quantity * item.unitPrice;
-      calculatedSubtotal = +totalPrice;
+      calculatedSubtotal += totalPrice;
 
       // Default item-level VAT flag
       let itemHasVat = false;
@@ -36,6 +82,13 @@ export const createInvoiceService = async (invoiceData) => {
       if (item.itemType === "RETAIL_STOCK") {
         const product = await Product.findById(item.referenceId);
         if (product) {
+          // Dynamic Soft-Lock calculation check
+          const availableStock = product.stockCount - product.reservedCount;
+          if (availableStock < item.quantity) {
+            throw new Error(
+              `Not enough available stock for ${product.productName.en}. Available ${availableStock} / จำนวนสินค้าในสต็อกไม่เพียงพอหรือสต็อกคงค้างในอินวอยซ์อื่นอยู่`,
+            );
+          }
           itemHasVat = product.isVatEnabled ?? true;
         }
       } else if (item.itemType === "STUDENT_TRACK") {
@@ -77,7 +130,7 @@ export const createInvoiceService = async (invoiceData) => {
   const runningNumber = (count + 1).toString().padStart(3, "0");
   const invoiceNumber = `INV-${yearMonth}-${runningNumber}`;
 
-  // 5. Save the finished Invoice document to MongoDB
+  // 5. Build the complete Invoice document architecture structure
   const newInvoice = new Invoice({
     schoolId,
     userId,
@@ -91,8 +144,10 @@ export const createInvoiceService = async (invoiceData) => {
     items: processedItems,
     note,
   });
-
-  return await newInvoice.save();
+  const savedInvoice = await newInvoice.save();
+  // SOFT LOCK TRIGGER: Automatically reserve items the moment the invoice is born!
+  await manageStockReservationService(savedInvoice, "RESERVE");
+  return savedInvoice;
 };
 
 export const updateInvoiceService = async (invoiceId, updateData) => {
@@ -119,7 +174,6 @@ export const updateInvoiceService = async (invoiceId, updateData) => {
   const schoolVatRateDecimal = (school.setting?.vatRate ?? 7) / 100;
 
   // 3. Update top-level plain fields if provided by the admin
-  if (status) existingInvoice.status = status;
   if (dueDate) existingInvoice.dueDate = dueDate;
   if (note !== undefined) existingInvoice.note = note;
 
@@ -130,6 +184,8 @@ export const updateInvoiceService = async (invoiceId, updateData) => {
 
   // 4. If the items array was modified, re-run your advanced calculations loop
   if (items && items.length > 0) {
+    // Before overwriting items, release old reservations so we don't double-lock stock
+    await manageStockReservationService(existingInvoice, "RELEASE");
     let calculatedSubtotal = 0;
     let totalCalculatedTax = 0;
 
@@ -143,19 +199,21 @@ export const updateInvoiceService = async (invoiceId, updateData) => {
         if (item.itemType === "RETAIL_STOCK") {
           const product = await Product.findById(item.referenceId);
           if (product) {
-            // Check if there is enough stock for the newly requested quantity
-            if (product.stockCount < item.quantity) {
+            // Updated Soft-Lock calculation check for updates
+            const availableStock = product.stockCount - product.reservedCount;
+            if (availableStock < item.quantity) {
               throw new Error(
-                `Not enough for ${product.productName.en} / สินค้า ${product.productName.th} มีไม่พอในสต็อก`,
+                `Not enough stock for ${product.productName.en}. Available: ${availableStock} / สินค้า ${product.productName.th} มีไม่พอในสต็อก`,
               );
             }
+
             itemHasVat = product.isVatEnabled ?? true;
           }
         } else if (item.itemType === "STUDENT_TRACK") {
           itemHasVat = item.isVatEnabled ?? false;
         }
         const itemTax = itemHasVat ? totalPrice * schoolVatRateDecimal : 0;
-        totalCalculateTax += itemTax;
+        totalCalculatedTax += itemTax;
 
         return {
           itemType: item.itemType,
@@ -179,8 +237,110 @@ export const updateInvoiceService = async (invoiceId, updateData) => {
     const rawTotal = calculatedSubtotal + totalCalculatedTax;
     existingInvoice.totalAmount =
       Math.round(Math.max(0, rawTotal - finalDiscount) * 100) / 100;
+
+    // Put reservations back for the new items list setup
+    await manageStockReservationService(existingInvoice, "RESERVE");
+  } else if (discount !== undefined) {
+    // Recalculate totals if only the discount changed
+    const rawTotal = existingInvoice.subTotal + existingInvoice.tax;
+    existingInvoice.totalAmount =
+      Math.round(Math.max(0, rawTotal - finalDiscount) * 100) / 100;
+  }
+
+  // STATUS-TRANSITION CODE HERE
+  const statusChanged = status && status !== existingInvoice.status;
+  if (statusChanged) {
+    if (status === "PAID") {
+      // Shifting status from DRAFT/SENT to PAID -> Confirm payment allocations
+      await manageStockReservationService(existingInvoice, "CONFIRM_PAYMENT");
+    } else if (status === "VOID") {
+      // Shifting status to VOID -> Release reservation holds completely
+      await manageStockReservationService(existingInvoice, "RELEASE");
+    }
+    existingInvoice.status = status;
   }
 
   // 5. Save the updated invoice back to MongoDB
   return await existingInvoice.save();
+};
+
+/**
+ * Safely removes an invoice and completely cleans up any lingering soft-lock inventory holds
+ * @param {String} invoiceId - The targeted invoice document ID
+ */
+export const deleteInvoiceService = async (invoiceId) => {
+  // 1. Find the target invoice document
+  const invoice = await Invoice.findById(invoiceId);
+  if (!invoice) {
+    throw new Error(
+      `Invoice ${invoiceId} not found / ไม่พบข้อมูลอินวอยซ์ ${invoiceId}`,
+    );
+  }
+
+  // Security Lock: Do not allow deletion if it is a paid transaction record
+  if (invoice.status === "PAID") {
+    throw new Error(
+      "Cannot delete invoice that is already paid. Please VOID instead / ไม่สามารถลบอินวอยซ์ที่ชำระเงินแล้ว กรุณาใช้วิธียกเลิกอินวอยซ์แทน",
+    );
+  }
+
+  // 2. Clear out any stock reservations if the invoice was in a DRAFT or SENT status
+  if (invoice.status === "DRAFT" || invoice.status === "SENT") {
+    await manageStockReservationService(invoice, "RELEASE");
+  }
+
+  // 3. Delete the actual document from MongoDB
+  return await Invoice.findByIdAndDelete(invoiceId);
+};
+
+/**
+ * Fetches filtered and paginated invoices for manager and admin dashboards
+ * @param {Object} queryOptions - Object containing filtering properties from req.query
+ */
+export const getInvoicesService = async (queryOptions) => {
+  const {
+    schoolId,
+    userId,
+    status,
+    search,
+    page = 1,
+    limit = 10,
+  } = queryOptions;
+
+  // 1. Build a dynamic MongoDB filter query map
+  const filter = {};
+
+  // Core scoping criteria
+  if (schoolId) filter.schoolId = schoolId;
+  if (userId) filter.userId = userId;
+  if (status) filter.status = status;
+
+  // Global search match (searches by invoice number)
+  if (search) {
+    filter.invoiceNumber = { $regex: search, $options: "i" }; // Case-insensitive matching
+  }
+
+  // 2. Configure standard cursor pagination calculations
+  const skipIndex = (parseInt(page) - 1) * parseInt(limit);
+  const dataLimit = parseInt(limit);
+
+  // 3. Fire database queries simultaneously for efficiency
+  const [invoices, totalRecords] = await Promise.all([
+    Invoice.find(filter)
+      .populate("userId", "firstName lastName email phoneNumber") // Pull student contact info dynamically,
+      .sort({ createdAt: -1 }) // Show newest invoice first
+      .skip(skipIndex)
+      .limit(dataLimit),
+    invoices.countDocuments(filter),
+  ]);
+
+  return {
+    invoices,
+    pagination: {
+      totalRecords,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalRecords / dataLimit),
+      limit: dataLimit,
+    },
+  };
 };
