@@ -10,7 +10,7 @@ import {
  * @route   POST /api/v1/invoices
  * @access  Private (Admin/Manager)
  */
-export const createInvoice = async (req, res) => {
+export const createInvoice = async (req, res, next) => {
   try {
     // Send the incoming frontend request body data straight into our service engine
     const invoice = await createInvoiceService(req.body);
@@ -22,11 +22,7 @@ export const createInvoice = async (req, res) => {
       data: invoice,
     });
   } catch (error) {
-    // Intercept any errors thrown inside the service layer and flag them as a 400 Bad Request
-    return res.status(400).json({
-      success: false,
-      message: "Failed to create invoice / ไม่สามารถสร้างอินวอยซ์ใหม่ได้",
-    });
+    next(error);
   }
 };
 
@@ -35,7 +31,7 @@ export const createInvoice = async (req, res) => {
  * @route   PUT /api/v1/invoices/:id
  * @access  Private (Admin/Manager)
  */
-export const updateInvoice = async (req, res) => {
+export const updateInvoice = async (req, res, next) => {
   try {
     const { id } = req.params; // Extracts the invoice database ID from the browser route URL
 
@@ -49,13 +45,7 @@ export const updateInvoice = async (req, res) => {
       data: updatedInvoice,
     });
   } catch (error) {
-    // Intercept missing records or out-of-stock errors and flag them as a 400 Bad Request
-    return res.status(400).json({
-      success: false,
-      message:
-        error.message ||
-        "Failed to update invoice / ไม่สามารถอัพเดทข้อมูลอินวอยซ์ได้",
-    });
+    next(error);
   }
 };
 
@@ -64,7 +54,7 @@ export const updateInvoice = async (req, res) => {
  * @route   DELETE /api/invoices/:id
  * @access  Private (Admin/Manager)
  */
-export const deleteInvoice = async (req, res) => {
+export const deleteInvoice = async (req, res, next) => {
   try {
     const { id } = req.params;
     await deleteInvoiceService(id);
@@ -75,12 +65,7 @@ export const deleteInvoice = async (req, res) => {
         "Invoice deleted and stock reservations released / ลบข้อมูลอินวอยซ์และคืนสต็อกที่กันไว้เรียบร้อยแล้ว",
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message:
-        error.message ||
-        "Failed to delete invoice / ไม่สามารถลบข้อมูลอินวอยซ์ได้",
-    });
+    next(error);
   }
 };
 
@@ -89,7 +74,7 @@ export const deleteInvoice = async (req, res) => {
  * @route   GET /api/invoices
  * @access  Private (Admin/Teacher/Manager)
  */
-export const getInvoices = async (req, res) => {
+export const getInvoices = async (req, res, next) => {
   try {
     // Forward the URL parameters (?status=PAID&page=1) right to the filter service
     const results = await getInvoicesService(req.query);
@@ -102,11 +87,6 @@ export const getInvoices = async (req, res) => {
       pagination: results.pagination,
     });
   } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message:
-        error.message ||
-        "Failed to fetch invoices / โหลดข้อมูลอินวอยซ์ไม่สำเร็จ",
-    });
+    next(error);
   }
 };

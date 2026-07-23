@@ -4,6 +4,7 @@ import {
   createProduct,
   getProducts,
   getProductStockSummary,
+  getCrossBranchStock,
 } from "../controllers/productControllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
@@ -17,4 +18,10 @@ router.get(
   protect,
   restrictTo("admin", "manager"),
   getProductStockSummary,
+);
+router.get(
+  "/cross-branch-check",
+  protect,
+  restrictTo("admin", "manager"),
+  getCrossBranchStock,
 );

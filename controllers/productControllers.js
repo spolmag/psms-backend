@@ -1,6 +1,7 @@
 import { Product } from "../models/Product.model.js";
 import { Zone } from "../models/Zone.model.js";
 import { ProductCategory } from "../models/ProductCategory.model.js";
+import { School } from "../models/School.model.js";
 
 // @desc    Register a new product or classroom equipment asset
 // @route   POST /api/products
@@ -198,5 +199,69 @@ export const getProductStockSummary = async (req, res, next) => {
     });
   } catch (error) {
     return next(error);
+  }
+};
+
+/**
+ * @desc    Check product inventory counts across all active branches
+ * @route   GET /api/products/cross-branch-check
+ * @access  Private (Admin/Manager)
+ */
+export const getCrossBranchStock = async (req, res, next) => {
+  try {
+    const { barcode, productName } = req.query;
+
+    if (!barcode || !productName) {
+      // Shifting an error code parameter so your handler marks it as a 400 Bad Request
+      res.status(400);
+      throw new Error(
+        "Please provide barcode or product name / กรุณาระบุบาร์โค้ดหรือชื่อสินค้า",
+      );
+    }
+
+    const filter = { isActive: true };
+    if (barcode) {
+      filter.barcode = barcode;
+    } else if (productName) {
+      filter.$or = [
+        { "productName.en": { $regex: productName, $options: "i" } },
+        { "productName.th": { $regex: productName, $options: "i" } },
+      ];
+    }
+
+    const matchingProducts = await Product.find(filter)
+      .populate("schoolId", "schoolName schoolType")
+      .select(
+        "schoolId productName barcode brand modelName stockCount reservedCount retailPrice",
+      )
+      .lean();
+
+    const report = matchingProducts.map((product) => {
+      const availableStock = product.stockCount - product.reservedCount;
+      return {
+        productId: product._id,
+        schoolId: product.schoolId?._id || null,
+        branchName: {
+          th: product.schoolId?.schoolName?.th || "ไม่ระบุสาขา",
+          en: product.schoolId?.schoolName?.en || "Unknow Branch",
+        },
+        productName: product.productName,
+        brand: product.brand || "-",
+        modelName: product.modelName || "-",
+        barcode: product.barcode || "-",
+        stockCount: product.stockCount,
+        reservedCount: product.reservedCount,
+        availableStock: Math.max(0, availableStock),
+        retailPrice: product.retailPrice,
+      };
+
+      return res.status(200).json({
+        success: true,
+        message: "Cross-branch inventory data compiled / แสดงสต็อกทุกสาขา",
+        data: report,
+      });
+    });
+  } catch (error) {
+    next(error);
   }
 };
