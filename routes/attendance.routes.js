@@ -3,7 +3,7 @@ import { Router } from "express";
 import {
   submitAttendance,
   getClassAttendance,
-} from "../controllers/attendanceControllers.js";
+} from "../controllers/attendance.controllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();

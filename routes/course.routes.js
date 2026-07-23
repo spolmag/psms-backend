@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createCourse, getCourses } from "../controllers/courseControllers.js";
+import { createCourse, getCourses } from "../controllers/course.controllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();

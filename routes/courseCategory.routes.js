@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   createCourseCategory,
   getCourseCategory,
-} from "../controllers/courseCategoryControllers.js";
+} from "../controllers/courseCategory.controllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();

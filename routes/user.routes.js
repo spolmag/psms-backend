@@ -3,7 +3,7 @@ import {
   addBranchToUser,
   getUserProfileById,
   updateStudentAcademicProfile,
-} from "../controllers/userControllers.js";
+} from "../controllers/user.controllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();

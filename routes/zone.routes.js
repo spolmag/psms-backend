@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createZone, getZones } from "../controllers/zoneController.js";
+import { createZone, getZones } from "../controllers/zone.controllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();

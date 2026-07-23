@@ -5,7 +5,7 @@ import {
   getProducts,
   getProductStockSummary,
   getCrossBranchStock,
-} from "../controllers/productControllers.js";
+} from "../controllers/product.controllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();

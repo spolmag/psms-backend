@@ -3,7 +3,7 @@ import { Router } from "express";
 import {
   createProductCategory,
   getProductCategories,
-} from "../controllers/productCategoryControllers.js";
+} from "../controllers/productCategory.controllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();

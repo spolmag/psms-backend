@@ -5,7 +5,7 @@ import {
   updateInvoice,
   deleteInvoice,
   getInvoices,
-} from "../controllers/invoiceController.js";
+} from "../controllers/invoice.controller.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();

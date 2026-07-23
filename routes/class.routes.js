@@ -4,7 +4,7 @@ import {
   getTeacherClasses,
   addStudentToClass,
   updateClassStatus,
-} from "../controllers/classControllers.js";
+} from "../controllers/class.controllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();
