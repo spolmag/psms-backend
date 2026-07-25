@@ -106,3 +106,42 @@ export const completeTranferService = async (transferId) => {
   transfer.status = "COMPLETED";
   return await transfer.save();
 };
+
+/**
+ * 3. Cancel a transfer request (Releases soft-locked stock at the source branch)
+ * @param {String} transferId - The target transfer document ID
+ */
+export const cancelTransferService = async (transferId) => {
+  // 1. Fetch the targeted transfer ticket
+  const transfer = await StockTransfer.findById(transferId);
+  if (!transfer) {
+    throw new Error("Transfer ticket not found! / ไม่พบเอกสารการโอนสินค้า");
+  }
+
+  // Security check: Only allow cancellation if the items haven't been received yet
+  if (transfer.status !== "PENDING") {
+    throw new Error(
+      `Can not cancel a transfer that is already ${transfer.status} / ไม่สามารถยกเลิกการโอนสินค้าที่สถานะเป็น ${transfer.status}`,
+    );
+  }
+
+  // 2. Find the product document at the original source branch (Branch B)
+  const sourceProduct = await Product.findOne({
+    barcode: transfer.productBarcode,
+    schoolId: transfer.fromSchoolId,
+  });
+
+  // If the product record was completely deleted somehow, skip subtraction to avoid crashing
+  if (sourceProduct) {
+    // Release the soft lock: Subtract the quantity from reservedCount
+    sourceProduct.reservedCount = Math.max(
+      0,
+      sourceProduct.reservedCount - transfer.quantity,
+    );
+    await sourceProduct.save();
+  }
+
+  // 3. Mark the tracking ticket status as CANCELLED
+  transfer.status = "CANCELED";
+  return await transfer.save();
+};

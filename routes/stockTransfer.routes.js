@@ -3,6 +3,7 @@ import { Router } from "express";
 import {
   createTransferRequest,
   completeTransfer,
+  cancelTransfer,
 } from "../controllers/stockTransfer.controllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
@@ -19,4 +20,10 @@ router.patch(
   protect,
   restrictTo("admin", "manager"),
   completeTransfer,
+);
+router.patch(
+  "/:id/cancel",
+  protect,
+  restrictTo("admin", "manager"),
+  cancelTransfer,
 );

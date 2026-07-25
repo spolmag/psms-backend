@@ -17,7 +17,7 @@ import { router as attendanceRoutes } from "./routes/attendance.routes.js";
 import { router as productCategoryRoutes } from "./routes/productCategory.routes.js";
 import { router as productRoutes } from "./routes/product.routes.js";
 import { router as invoiceRoutes } from "./routes/invoice.routes.js";
-import { router as productTransferRoutes } from "./routes/stockTransfer.routes.js";
+import { router as stockTransferRoutes } from "./routes/stockTransfer.routes.js";
 
 dotenv.config();
 connectDB();
@@ -37,7 +37,7 @@ app.use("/api/attendance", attendanceRoutes);
 app.use("/api/product-categories", productCategoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/invoices", invoiceRoutes);
-app.use("api/product-transfer", productTransferRoutes);
+app.use("api/stock-transfers", stockTransferRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the Private School System Management API" });

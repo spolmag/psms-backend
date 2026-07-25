@@ -1,6 +1,8 @@
+import { StockTransfer } from "../models/StockTransfer.model.js";
 import {
   requestTransferService,
   completeTranferService,
+  cancelTransferService,
 } from "../sevices/StockTransfer.service.js";
 
 export const createTransferRequest = async (req, res, next) => {
@@ -32,5 +34,26 @@ export const completeTransfer = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+/**
+ * @desc    Abort a pending stock transfer request and lift inventory locks
+ * @route   PATCH /api/stock-transfers/:id/cancel
+ * @access  Private (Admin/Manager)
+ */
+export const cancelTransfer = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const transfer = await cancelTransferService(id);
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Transfer canceled successfully and source stock release / ยกเลิกการขอโอนสินค้า-ทำคืนสต็อกสินค้าแล้ว",
+      data: transfer,
+    });
+  } catch (error) {
+    return next(error);
   }
 };
