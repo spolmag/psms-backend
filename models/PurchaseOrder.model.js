@@ -75,7 +75,6 @@ const purchaseOrderSchema = new mongoose.Schema(
 );
 
 purchaseOrderSchema.index({ schoolId: 1, supplierId: 1, status: 1 });
-purchaseOrderSchema.index({ poNumber: 1 }, { unique: true });
 
 export const PurchaseOrder = mongoose.model(
   "PurchaseOrder",
