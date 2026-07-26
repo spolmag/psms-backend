@@ -148,3 +148,56 @@ export const cancelPurchaseOrderService = async (poId, note) => {
 
   return await po.save();
 };
+
+/**
+ * Fetches filtered and paginated Purchase Orders for manager and admin dashboards
+ * @param {Object} queryOptions - Object containing filtering parameters from req.query
+ */
+export const getPurchaseOrdersService = async (queryOptions) => {
+  const {
+    schoolId,
+    supplierId,
+    status,
+    search,
+    page = 1,
+    limit = 10,
+  } = queryOptions;
+
+  // 1. Build a dynamic MongoDB filter query map
+  const filter = {};
+
+  if (schoolId) filter.schoolId = schoolId;
+  if (supplierId) filter.supplierId = supplierId;
+  if (status) filter.status = status;
+
+  // Global search match (searches by PO tracking document number)
+  if (search) {
+    filter.poNumber = { $regex: search, $options: "i" }; // Case-insensitive matching
+  }
+
+  // 2. Configure cursor pagination calculations
+  const skipIndex = (parseInt(page) - 1) * parseInt(limit);
+  const dataLimit = parseInt(limit);
+
+  // 3. Query documents simultaneously and aggregate totals smoothly
+  const [purchaseOrders, totalRecords] = await Promise.all([
+    PurchaseOrder.find(filter)
+      .populate("supplierId", "supplierName cantactPerson phoneNumber") // Pull vendor metadata
+      .populate("schoolId", "schoolName schoolType") // Pull branch descriptions
+      .populate("createBy", "name email") // Pull creator identity
+      .sort({ createAt: -1 }) // Show newest purchase orders first
+      .skip(skipIndex)
+      .limit(dataLimit),
+    PurchaseOrder.countDocuments(filter),
+  ]);
+
+  return {
+    purchaseOrders,
+    pagination: {
+      totalRecords,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalRecords / dataLimit),
+      limit: dataLimit,
+    },
+  };
+};

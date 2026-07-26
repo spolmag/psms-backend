@@ -2,6 +2,7 @@ import {
   createPurchaseOrderService,
   receivePurchaseOrderItemsService,
   cancelPurchaseOrderService,
+  getPurchaseOrdersService,
 } from "../sevices/PurchaseOrder.service.js";
 
 /**
@@ -66,6 +67,29 @@ export const cancelPurchaseOrder = async (req, res, next) => {
       message:
         "Canceled PO and stock balance terminated / ยกเลิกใบสั่งซื้อแล้ว",
       data: canceledPo,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get filtered, paginated purchase order lists with entity expansions
+ * @route   GET /api/purchase-orders
+ * @access  Private (Admin/Manager)
+ */
+export const getPurchaseOrders = async (req, res, next) => {
+  try {
+    // Forward the URL search parameters (like ?status=OPEN&page=1) right to the filter service engine
+    const results = await getPurchaseOrdersService(req.query);
+
+    // Return a clean 200 OK status to the frontend browser with complete arrays and pagination tracking maps
+    return res.status(200).json({
+      success: true,
+      message:
+        "Purchase orders list completed / ดึงข้อมูลใบสั่งซื้อสินค้าสำเร็จ",
+      data: results.purchaseOrders,
+      pagination: results.pagination,
     });
   } catch (error) {
     next(error);
