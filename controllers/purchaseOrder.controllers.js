@@ -3,6 +3,7 @@ import {
   receivePurchaseOrderItemsService,
   cancelPurchaseOrderService,
   getPurchaseOrdersService,
+  getPurchaseOrderByIdService,
 } from "../sevices/PurchaseOrder.service.js";
 
 /**
@@ -90,6 +91,26 @@ export const getPurchaseOrders = async (req, res, next) => {
         "Purchase orders list completed / ดึงข้อมูลใบสั่งซื้อสินค้าสำเร็จ",
       data: results.purchaseOrders,
       pagination: results.pagination,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get an individual purchase order detail profile by its MongoDB ID
+ * @route   GET /api/purchase-orders/:id
+ * @access  Private (Admin/Manager)
+ */
+export const getPurchaseOrderById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const po = getPurchaseOrderByIdService(id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Purchase order details retrieved / โหลดใบสั่งซื้อสำเร็จ",
+      data: po,
     });
   } catch (error) {
     next(error);

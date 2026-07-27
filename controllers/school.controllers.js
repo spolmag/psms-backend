@@ -2,8 +2,15 @@ import { School } from "../models/School.model.js";
 
 export const registerSchool = async (req, res, next) => {
   try {
-    const { schoolName, schoolType, email, phoneNumber, address, setting } =
-      req.body || {};
+    const {
+      schoolName,
+      schoolType,
+      email,
+      phoneNumber,
+      taxId,
+      address,
+      setting,
+    } = req.body || {};
 
     const schoolExists = await School.findOne({
       $or: [
@@ -24,6 +31,7 @@ export const registerSchool = async (req, res, next) => {
       schoolType,
       email,
       phoneNumber,
+      taxId,
       address,
       setting,
     });
@@ -46,5 +54,36 @@ export const getSchoolById = async (req, res, next) => {
     return res.status(200).json({ success: true, data: school });
   } catch (error) {
     return next(error);
+  }
+};
+
+/**
+ * @desc    Update school branch profile data configurations
+ * @route   PUT /api/schools/:id
+ * @access  Private (Admin)
+ */
+export const updateSchool = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    // Use $set to update fields dynamically based on whatever the administrator submits
+    const updatedSchool = await School.findByIdAndUpdate(
+      id,
+      { $set: req.body },
+      { new: true, runValidators: true }, // Returns the fresh document and fires schema validation check
+    );
+
+    if (!updatedSchool) {
+      res.status(404);
+      throw new Error("School branch not found / ไม่พบข้อมูลโรงเรียน-สาขา");
+    }
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "School branch update successfully / แก้ไขข้อมูลโรงเรียน-สาขาสำเร็จ",
+      data: updatedSchool,
+    });
+  } catch (error) {
+    next(error);
   }
 };

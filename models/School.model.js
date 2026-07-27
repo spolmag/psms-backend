@@ -25,6 +25,9 @@ const schoolSchema = new mongoose.Schema(
     phoneNumber: {
       type: String,
     },
+    taxId: {
+      type: String,
+    },
     address: {
       th: { type: String },
       en: { type: String },

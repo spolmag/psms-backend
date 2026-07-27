@@ -1,5 +1,6 @@
 import { PurchaseOrder } from "../models/PurchaseOrder.model.js";
 import { Product } from "../models/Product.model.js";
+import { populate } from "dotenv";
 
 /**
  * 1. Open a new Purchase Order document ticket
@@ -200,4 +201,28 @@ export const getPurchaseOrdersService = async (queryOptions) => {
       limit: dataLimit,
     },
   };
+};
+
+/**
+ * 4. Fetches an individual purchase order document expanded by ID
+ * @param {String} poId - Target Purchase Order document ID
+ */
+export const getPurchaseOrderByIdService = async (poId) => {
+  const purchaseOrder = await PurchaseOrder.findById(poId)
+    .populate(
+      "supplierId",
+      "supplierName contactPerson phoneNumber taxId email address",
+    )
+    .populate("schoolId", "schoolName schoolType setting")
+    .populate("createBy", "name email")
+    .populate(
+      "items.productId",
+      "productName barcode brand modelName costPrice retailPrice",
+    );
+
+  if (!purchaseOrder) {
+    throw new Error("Purchase order not found / ไม่พบใบสั่งซื้อสินค้า");
+  }
+
+  return purchaseOrder;
 };

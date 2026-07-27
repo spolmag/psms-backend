@@ -78,6 +78,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    taxId: {
+      type: String,
+    },
+    isSupplier: {
+      type: Boolean,
+      default: false,
+    },
     dateOfBirth: {
       type: Date,
     },

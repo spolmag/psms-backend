@@ -1,6 +1,11 @@
 import { User } from "../models/User.model.js";
 import { generateToken } from "../utils/generateToken.js";
 
+/**
+ * @desc    Register a new user account with optional tax and vendor indicators
+ * @route   POST /api/auth/register
+ * @access  Private/Public (Depending on your system configurations)
+ */
 export const registerUser = async (req, res, next) => {
   try {
     const {
@@ -10,6 +15,8 @@ export const registerUser = async (req, res, next) => {
       password,
       role,
       phoneNumber,
+      taxId,
+      isSupplier,
       dateOfBirth,
       extraData,
       academicProfile,
@@ -31,6 +38,8 @@ export const registerUser = async (req, res, next) => {
       password,
       role,
       phoneNumber,
+      taxId,
+      isSupplier,
       dateOfBirth,
       extraData,
       academicProfile,
@@ -46,6 +55,8 @@ export const registerUser = async (req, res, next) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        taxId: user.taxId,
+        isSupplier: user.isSupplier,
         academicProfile: user.academicProfile,
       },
     });
@@ -54,6 +65,11 @@ export const registerUser = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Authenticate user sessions and return operational states
+ * @route   POST /api/auth/login
+ * @access  Public
+ */
 export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body || {};
@@ -70,6 +86,8 @@ export const loginUser = async (req, res, next) => {
           name: user.name,
           email: user.email,
           role: user.role,
+          taxId: user.taxId,
+          isSupplier: user.isSupplier,
         },
       });
     } else {
@@ -83,6 +101,11 @@ export const loginUser = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Fetch hydrated current user profiles for active local storage syncing
+ * @route   GET /api/auth/profile
+ * @access  Private
+ */
 export const getCurrentUserProfile = async (req, res, next) => {
   try {
     if (!req.user) {
@@ -105,6 +128,11 @@ export const getCurrentUserProfile = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Switch user operations perspective context to other sister branches
+ * @route   PATCH /api/auth/switch-branch
+ * @access  Private
+ */
 export const switchBranch = async (req, res, next) => {
   try {
     const { schoolId } = req.body || {};
