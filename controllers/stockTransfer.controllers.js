@@ -1,7 +1,7 @@
 import { StockTransfer } from "../models/StockTransfer.model.js";
 import {
   requestTransferService,
-  completeTranferService,
+  completeTransferService,
   cancelTransferService,
 } from "../sevices/StockTransfer.service.js";
 

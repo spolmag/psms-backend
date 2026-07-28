@@ -21,10 +21,10 @@ const paymentSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       required: [true, "กรุณาระบุช่องทางการชำระ"],
-    },
-    enum: {
-      values: ["CASH", "BANK_TRANSFER", "CREDIT_CARD", "STRIPE"],
-      message: "{VALUE} is not a valid payment method",
+      enum: {
+        values: ["CASH", "BANK_TRANSFER", "CREDIT_CARD", "STRIPE"],
+        message: "{VALUE} is not a valid payment method",
+      },
     },
     transactionReference: {
       type: String,
