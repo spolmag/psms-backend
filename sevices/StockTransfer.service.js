@@ -17,7 +17,7 @@ export const requestTransferService = async (transferData, userId) => {
 
   if (!sourceProduct) {
     throw new Error(
-      "Product not found at source branch / ไม่พบสินค้าที่สาขาต้อนทาง",
+      "Product not found at source branch / ไม่พบสินค้าที่สาขาต้นทาง",
     );
   }
 
@@ -50,7 +50,7 @@ export const requestTransferService = async (transferData, userId) => {
 /**
  * 2. Complete a transfer (Fired when destination branch clicks "Receive")
  */
-export const completeTranferService = async (transferId) => {
+export const completeTransferService = async (transferId) => {
   const transfer = await StockTransfer.findById(transferId);
   if (!transfer || transfer.status !== "PENDING") {
     throw new Error(
@@ -142,6 +142,6 @@ export const cancelTransferService = async (transferId) => {
   }
 
   // 3. Mark the tracking ticket status as CANCELLED
-  transfer.status = "CANCELED";
+  transfer.status = "CANCELLED";
   return await transfer.save();
 };

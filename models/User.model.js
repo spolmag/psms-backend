@@ -85,6 +85,16 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    supplierId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Supplier",
+      required: [
+        function () {
+          return this.isSupplier === true;
+        },
+        "Supplier accounts must point to a corporate entity / บัญชีซัพพลายเออร์ต้องระบุรหัสซัพพลายเออร์",
+      ],
+    },
     dateOfBirth: {
       type: Date,
     },

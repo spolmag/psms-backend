@@ -22,6 +22,7 @@ export const createInvoice = async (req, res, next) => {
       data: invoice,
     });
   } catch (error) {
+    res.status(400);
     next(error);
   }
 };
@@ -45,6 +46,7 @@ export const updateInvoice = async (req, res, next) => {
       data: updatedInvoice,
     });
   } catch (error) {
+    res.status(400);
     next(error);
   }
 };
@@ -65,6 +67,7 @@ export const deleteInvoice = async (req, res, next) => {
         "Invoice deleted and stock reservations released / ลบข้อมูลอินวอยซ์และคืนสต็อกที่กันไว้เรียบร้อยแล้ว",
     });
   } catch (error) {
+    res.status(400);
     next(error);
   }
 };
@@ -87,6 +90,7 @@ export const getInvoices = async (req, res, next) => {
       pagination: results.pagination,
     });
   } catch (error) {
+    res.status(400);
     next(error);
   }
 };

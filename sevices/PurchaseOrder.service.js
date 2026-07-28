@@ -1,6 +1,5 @@
 import { PurchaseOrder } from "../models/PurchaseOrder.model.js";
 import { Product } from "../models/Product.model.js";
-import { populate } from "dotenv";
 
 /**
  * 1. Open a new Purchase Order document ticket
@@ -29,7 +28,7 @@ export const createPurchaseOrderService = async (poData, userId) => {
     schoolId,
     supplierId,
     items,
-    createBy: userId,
+    createdBy: userId,
     status: "OPEN",
     note,
   });
@@ -51,7 +50,7 @@ export const receivePurchaseOrderItemsService = async (
     throw new Error("PO not found! / ไม่พบใบสั่งซื้อ");
   }
 
-  if (["COMPLETED", "CANCELED"].includes(po.status)) {
+  if (["COMPLETED", "CANCELLED"].includes(po.status)) {
     throw new Error(
       `Can not receive item on a ${po.status} purchase order / ไม่สามารถรับเข้าสินค้าของใบสั่งซื้อที่มีสถานะ ${po.status}`,
     );
@@ -62,13 +61,13 @@ export const receivePurchaseOrderItemsService = async (
     receivingItems.map(async (delivery) => {
       // Find matching item line inside the PO array setup
       const itemLine = po.items.find(
-        (item) => item.productId.toString === delivery.productId.toString(),
+        (item) => item.productId.toString() === delivery.productId.toString(),
       );
       if (!itemLine) return;
 
       // Handle explicit individual line item cancellations from supplier shortages
       if (delivery.cancelItem) {
-        itemLine.isItemCanceled = true;
+        itemLine.isItemCancelled = true;
       }
 
       const incomingQty = parseInt(delivery.incrementQuantity || 0);
@@ -104,12 +103,12 @@ export const receivePurchaseOrderItemsService = async (
 
     // Line is satisfied if completely filled or explicitly marked as cancelled by admin
     const isLineDone =
-      item.receivedQuantity === item.orderedQuantity || item.isItemCanceled;
-    if (!isLineDone) allLineSatisfied = true; // Still missing pieces
+      item.receivedQuantity === item.orderedQuantity || item.isItemCancelled;
+    if (!isLineDone) allLineSatisfied = false; // Still missing pieces
   });
 
   if (allLineSatisfied) {
-    po.status = "COMPLETE";
+    po.status = "COMPLETED";
   } else if (hasReceivedAny) {
     po.status = "PARTIALLY_RECEIVED";
   }
@@ -124,13 +123,13 @@ export const receivePurchaseOrderItemsService = async (
  */
 export const cancelPurchaseOrderService = async (poId, note) => {
   // 1. Fetch the targeted Purchase Order ticket
-  const po = PurchaseOrder.findById(poId);
+  const po = await PurchaseOrder.findById(poId);
   if (!po) {
     throw new Error("Purchase Order not found / ไม่พบใบสั่งซื้อนี้");
   }
 
   // Security check: Lock down if the order is already resolved or terminated
-  if (["COMPLETED", "CANCELED"].includes(po.status)) {
+  if (["COMPLETED", "CANCELLED"].includes(po.status)) {
     throw new Error(
       `Cannot canel a PO that is already ${po.status} / ไม่สามารถยกเลิกใบสั่งซื้อที่มีสถานะ ${po.status}`,
     );
@@ -139,13 +138,13 @@ export const cancelPurchaseOrderService = async (poId, note) => {
   // 2. Mark any unfulfilled line items as cancelled for data history integrity
   po.items.forEach((item) => {
     if (item.receivedQuantity < item.orderedQuantity) {
-      item.isItemCanceled = true;
+      item.isItemCancelled = true;
     }
   });
 
   // 3. Update the global document tracking status
-  po.status = "CANCELED";
-  if (note) po.note ? `${po.note} | Cancel note: ${note}` : note;
+  po.status = "CANCELLED";
+  if (note) po.note = po.note ? `${po.note} | Cancel note: ${note}` : note;
 
   return await po.save();
 };
@@ -186,7 +185,7 @@ export const getPurchaseOrdersService = async (queryOptions) => {
       .populate("supplierId", "supplierName cantactPerson phoneNumber") // Pull vendor metadata
       .populate("schoolId", "schoolName schoolType") // Pull branch descriptions
       .populate("createBy", "name email") // Pull creator identity
-      .sort({ createAt: -1 }) // Show newest purchase orders first
+      .sort({ createdAt: -1 }) // Show newest purchase orders first
       .skip(skipIndex)
       .limit(dataLimit),
     PurchaseOrder.countDocuments(filter),
@@ -214,7 +213,7 @@ export const getPurchaseOrderByIdService = async (poId) => {
       "supplierName contactPerson phoneNumber taxId email address",
     )
     .populate("schoolId", "schoolName schoolType setting")
-    .populate("createBy", "name email")
+    .populate("createdBy", "name email")
     .populate(
       "items.productId",
       "productName barcode brand modelName costPrice retailPrice",

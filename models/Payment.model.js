@@ -7,7 +7,7 @@ const paymentSchema = new mongoose.Schema(
       ref: "School",
       required: [
         true,
-        "Payment must belong to branch / รายการชำระเงินจะต้องระบุสาขา",
+        "Payment must belong to branch / รายการชำระเงินจะต้องระบุโรงเรียน-สาขา",
       ],
     },
     invoiceId: {
@@ -23,7 +23,7 @@ const paymentSchema = new mongoose.Schema(
       required: [true, "กรุณาระบุช่องทางการชำระ"],
     },
     enum: {
-      values: ["CASH", "BANK_TRANSFER", "CREDIT_CARD"],
+      values: ["CASH", "BANK_TRANSFER", "CREDIT_CARD", "STRIPE"],
       message: "{VALUE} is not a valid payment method",
     },
     transactionReference: {
@@ -61,7 +61,6 @@ const paymentSchema = new mongoose.Schema(
 );
 
 paymentSchema.index({ schoolId: 1, invoiceId: 1, status: 1 });
-paymentSchema.index({ transactionReference: 1 });
 paymentSchema.index({ paidAt: -1 });
 
 export const Payment = mongoose.model("Payment", paymentSchema);

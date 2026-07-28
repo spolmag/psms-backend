@@ -199,14 +199,13 @@ export const updateInvoiceService = async (invoiceId, updateData) => {
         if (item.itemType === "RETAIL_STOCK") {
           const product = await Product.findById(item.referenceId);
           if (product) {
-            // Updated Soft-Lock calculation check for updates
+            // Updated Soft-Lock calculation check for updates using fresh database values
             const availableStock = product.stockCount - product.reservedCount;
             if (availableStock < item.quantity) {
               throw new Error(
-                `Not enough stock for ${product.productName.en}. Available: ${availableStock} / สินค้า ${product.productName.th} มีไม่พอในสต็อก`,
+                `Not enough stock for ${product.productName.en}. Available: ${availableStock} / สินค้า ${product.productName.th} จำนวนไม่พอในสต็อก`,
               );
             }
-
             itemHasVat = product.isVatEnabled ?? true;
           }
         } else if (item.itemType === "STUDENT_TRACK") {
@@ -327,11 +326,11 @@ export const getInvoicesService = async (queryOptions) => {
   // 3. Fire database queries simultaneously for efficiency
   const [invoices, totalRecords] = await Promise.all([
     Invoice.find(filter)
-      .populate("userId", "firstName lastName email phoneNumber") // Pull student contact info dynamically,
+      .populate("userId", "name email phoneNumber") // Pull student contact info dynamically,
       .sort({ createdAt: -1 }) // Show newest invoice first
       .skip(skipIndex)
       .limit(dataLimit),
-    invoices.countDocuments(filter),
+    Invoice.countDocuments(filter),
   ]);
 
   return {

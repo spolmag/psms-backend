@@ -30,7 +30,7 @@ const poItemsSchema = new mongoose.Schema({
       "Unit cost price is required / กรุณาระบุราคาสั่งซื้อต่อหน่วยห",
     ],
   },
-  isItemCanceled: {
+  isItemCancelled: {
     type: Boolean,
     default: false, // Allows admins to cancel an individual out-of-stock item line
   },

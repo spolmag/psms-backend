@@ -17,6 +17,7 @@ export const registerUser = async (req, res, next) => {
       phoneNumber,
       taxId,
       isSupplier,
+      supplierId,
       dateOfBirth,
       extraData,
       academicProfile,
@@ -40,6 +41,7 @@ export const registerUser = async (req, res, next) => {
       phoneNumber,
       taxId,
       isSupplier,
+      supplierId,
       dateOfBirth,
       extraData,
       academicProfile,
@@ -57,6 +59,7 @@ export const registerUser = async (req, res, next) => {
         role: user.role,
         taxId: user.taxId,
         isSupplier: user.isSupplier,
+        supplierId: user.supplierId,
         academicProfile: user.academicProfile,
       },
     });
@@ -88,6 +91,7 @@ export const loginUser = async (req, res, next) => {
           role: user.role,
           taxId: user.taxId,
           isSupplier: user.isSupplier,
+          supplierId: user.supplierId,
         },
       });
     } else {

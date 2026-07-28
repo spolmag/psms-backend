@@ -113,7 +113,7 @@ export const getProducts = async (req, res, next) => {
 
     const queryFilter = { schoolId, isActive: true };
 
-    if (categoryId) queryFilter.ProductCategoryId = categoryId;
+    if (categoryId) queryFilter.productCategoryId = categoryId;
     if (purpose) queryFilter.purpose = purpose;
 
     const products = await Product.find(queryFilter)
@@ -211,7 +211,7 @@ export const getCrossBranchStock = async (req, res, next) => {
   try {
     const { barcode, productName } = req.query;
 
-    if (!barcode || !productName) {
+    if (!barcode && !productName) {
       // Shifting an error code parameter so your handler marks it as a 400 Bad Request
       res.status(400);
       throw new Error(
@@ -254,12 +254,12 @@ export const getCrossBranchStock = async (req, res, next) => {
         availableStock: Math.max(0, availableStock),
         retailPrice: product.retailPrice,
       };
+    });
 
-      return res.status(200).json({
-        success: true,
-        message: "Cross-branch inventory data compiled / แสดงสต็อกทุกสาขา",
-        data: report,
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Cross-branch inventory data compiled / แสดงสต็อกทุกสาขา",
+      data: report,
     });
   } catch (error) {
     next(error);
