@@ -173,3 +173,108 @@ export const getDashboardSummary = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * @desc    Generate ranked retail product sales leaderboard (Supports Specific Branch or All-Branch Consolidated)
+ * @route   GET /api/financial-reports/product-performance
+ * @access  Private (Admin & Manager only)
+ */
+export const getProductSalesPerformance = async (req, res, next) => {
+  try {
+    const userActiveSchoolId = req.user.activeSchool;
+    const { startDate, endDate, schoolId } = req.query;
+
+    // 1. DETERMINE MULTI-BRANCH FILTER SCOPING RULES
+    const invoiceMatchCriteria = { status: "PAID" };
+
+    if (schoolId !== "ALL") {
+      const targetSchoolId = schoolId || userActiveSchoolId;
+      invoiceMatchCriteria.schoolId = new mongoose.Types.ObjectId(
+        targetSchoolId,
+      );
+    }
+
+    // 2. CONFIGURE DYNAMIC DATE RANGE FILTER CONSTRAINTS
+    const dateMatch = {};
+    if (startDate) dateMatch.$gte = new Date(startDate);
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      dateMatch.$lte = end;
+    }
+
+    if (startDate || endDate) {
+      invoiceMatchCriteria.updatedAt = dateMatch; // Track invoices settled in this timeframe
+    }
+
+    // 3. RUN ENTERPRISE PERFORMANCE AGGREGATION PIPELINE
+    const report = await Invoice.aggregate([
+      { $match: invoiceMatchCriteria },
+      { $unwind: "$items" },
+      { $match: { "items.itemType": "RETAIL_STOCK" } }, // Exclude tuition course tracks cleanly
+      // Group lines by the unique product referenceId
+      {
+        $group: {
+          _id: "$items.referenceId",
+          totalQuantitySold: { $sum: "$items.quantity" },
+          totalNetRevenue: { $sum: "$items.totalPrice" }, // pre-tax subtotal line pricing
+        },
+      },
+      // Join with the Products collection to extract names, brands, barcodes, and stock levels
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      { $unwind: "$productDetails" },
+      // DYNAMIC CONSOLIDATION STAGE: Group by BARCODE to merge multi-branch stock balances cleanly
+      {
+        $group: {
+          _id: "$productDetails.barcode", // Group everything sharing the same barcode string layout
+          productName: { $first: "$productDetails.productName" },
+          brand: { $first: "$productDetails.brand" },
+          modelName: { $first: "$productDetails.modelName" },
+          retailPrice: { $first: "$productDetails.retailPrice" },
+          totalQuantitySold: { $sum: "$totalQuantitySold" },
+          totalNetRevenue: { $sum: "$totalNetRevenue" },
+          currentGlobalStockLeft: { $sum: "$productDetails.stockCount" },
+        },
+      },
+      // Clean up fields output schema layout mapping
+      {
+        $project: {
+          barcode: "$_id",
+          _id: 0,
+          productName: 1,
+          brand: { $ifNull: ["$brand", "-"] },
+          modelName: { $ifNull: ["$modelName", "-"] },
+          retailPrice: 1,
+          totalQuantitySold: 1,
+          totalNetRevenue: 1,
+          currentStockLeft: "$currentGlobalStockLeft",
+        },
+      },
+      // Sort performance output: Highest revenue generators show up first
+      { $sort: { totalNetRevenue: -1 } },
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Product sales performance report compiled / สรุปยอดขายสินค้าเรียบร้อยแล้ว",
+      data: {
+        timeframe: {
+          startDate: startDate || "All time",
+          endDate: endDate || "All time",
+        },
+        itemsCount: report.length,
+        rankingList: report,
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
