@@ -81,6 +81,10 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    isHighLighted: {
+      type: Boolean,
+      default: false,
+    },
     note: {
       type: String,
     },
@@ -94,6 +98,7 @@ productSchema.index({
   ProductCategoryId: 1,
   purpose: 1,
   isActive: 1,
+  isHighLighted: 1,
 });
 productSchema.index({ barcode: 1, serialNumber: 1 });
 

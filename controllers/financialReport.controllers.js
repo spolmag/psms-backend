@@ -278,3 +278,102 @@ export const getProductSalesPerformance = async (req, res, next) => {
     return next(error);
   }
 };
+
+/**
+ * @desc    Get a list of all unpaid invoices past their due date with student contact info
+ * @route   GET /api/financial-reports/overdue-invoices
+ * @access  Private (Admin & Manager only)
+ */
+export const getOverdueInvoicesReport = async (req, res, next) => {
+  try {
+    const userActiveSchoolId = req.user.activeSchool;
+    const { schoolId, page = 1, limit = 10 } = req.query;
+
+    // 1. Configure Branch Scoping (Specific Branch or All Branches)
+    const filter = {
+      status: { $in: ["DRAFT", "SENT", "OVERDUE"] }, // Still unpaid
+      dueDate: { $lt: new Date() }, // Due date is in the past
+    };
+
+    if (schoolId !== "ALL") {
+      const targetSchoolId = schoolId || userActiveSchoolId;
+      filter.schoolId = new mongoose.Types.ObjectId(targetSchoolId);
+    }
+
+    // 2. Configure standard cursor pagination calculations
+    const skipIndex = (parseInt(page) - 1) * parseInt(limit);
+    const dataLimit = parseInt(limit);
+
+    // 3. Fire database queries concurrently for high efficiency
+    const [overdueInvoices, totalrecords, totalOverdueSumPipeline] =
+      await Promise.all([
+        Invoice.find(filter)
+          .populate("userId", "name email phoneNumber")
+          .populate("schoolId", "schoolName schoolType")
+          .sort({ dueDate: 1 }) // Show the oldest overdue debts first so they get prioritized!
+          .skip(skipIndex)
+          .limit(dataLimit)
+          .lean(),
+        Invoice.countDocuments(filter),
+        Invoice.aggregate([
+          { $match: filter },
+          { $group: { _id: null, grandSum: { $sum: "$totalAmount" } } },
+        ]),
+      ]);
+
+    // 4. Extract the aggregated sum safely with a clean fallback default
+    const totalOverdueSum = totalOverdueSumPipeline[0]?.grandSum || 0;
+
+    // 5. Map records to calculate exactly how many days each invoice is overdue
+    const today = new Date();
+    const formattedList = overdueInvoices.map((invoice) => {
+      const due = new Date(invoice.dueDate);
+      const timeDiff = today.getTime() - due.gateTime();
+      const daysOverdue = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // Convert milliseconds to whole days
+
+      return {
+        invoiceId: invoice._id,
+        invoiceNumber: invoice.invoiceNumber,
+        status: invoice.status,
+        totalAmount: invoice.totalAmount,
+        subTotal: invoice.subTotal,
+        tax: invoice.tax,
+        dueDate: invoice.dueDate,
+        daysOverdue: daysOverdue > 0 ? daysOverdue : 0,
+        branchName: invoice.schoolId?.schoolName || "-",
+        studate: {
+          id: invoice.userId?._id || null,
+          name: invoice.userId?.name || {
+            th: "ไม่ระบุข้อมูล",
+            en: "Unknow student",
+          },
+          email: invoice.userId?.email || "-",
+          phoneNumber: invoice.userId?.phoneNumber || "-",
+        },
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Overdue invoices tracking report compiled / โหลดรายงานอินวอยซ์เกินกำหนดชำระสำเร็จ",
+      data: {
+        scope:
+          schoolId === "ALL"
+            ? "All Branches Consolidated / ข้อมูลทุกสาขา"
+            : "Single Branch / ข้อมูลเฉพาะสาขา",
+        totalOverdueCount: totalrecords,
+        totalOverdueAmountSum: Math.round(totalOverdueSum * 100) / 100,
+        reportList: formattedList,
+        pagination: {
+          totalrecords,
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(totalrecords / dataLimit),
+          limit: dataLimit,
+        },
+      },
+    });
+  } catch (error) {
+    return next(error);
+  }
+};

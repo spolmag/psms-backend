@@ -22,6 +22,7 @@ export const createProduct = async (req, res, next) => {
       retailPrice,
       isVatEnabled,
       stockCount,
+      isHighlighted,
       note,
     } = req.body || {};
 
@@ -89,6 +90,7 @@ export const createProduct = async (req, res, next) => {
       retailPrice,
       isVatEnabled: isVatEnabled !== undefined ? isVatEnabled : true,
       stockCount: stockCount !== undefined ? stockCount : 1,
+      isHighLighted: isHighlighted === true, // COMMITTED: Optionally into MongoDB
       note,
     });
 
@@ -109,12 +111,16 @@ export const createProduct = async (req, res, next) => {
 export const getProducts = async (req, res, next) => {
   try {
     const schoolId = req.user.activeSchool;
-    const { categoryId, purpose } = req.query || {};
+    const { categoryId, purpose, isHighLighted } = req.query || {};
 
     const queryFilter = { schoolId, isActive: true };
 
     if (categoryId) queryFilter.productCategoryId = categoryId;
     if (purpose) queryFilter.purpose = purpose;
+    if (isHighLighted !== undefined) {
+      // DYNAMIC FILTER MATCHING: If ?isHighlighted=true is supplied, clamp filter to it
+      queryFilter.isHighLighted = isHighLighted === "true";
+    }
 
     const products = await Product.find(queryFilter)
       .populate("productCategoryId", "name")
