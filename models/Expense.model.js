@@ -37,7 +37,7 @@ const expenseSchema = new mongoose.Schema(
     },
     // Flex-Reference: Reference either a corporate Supplier or an internal User/Teacher
     payeeSupplierId: {
-      type: mongoose.schoolId.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Supplier",
     },
     payeeUserId: {
@@ -91,12 +91,11 @@ const expenseSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    note: { type: string },
+    note: { type: String },
   },
   { timestamps: true },
 );
 
 expenseSchema.index({ schoolId: 1, expenseCategory: 1, status: 1 });
-expenseSchema.index({ expenseNumber: 1 }, { unique: true });
 
 export const Expense = mongoose.model("Expense", expenseSchema);

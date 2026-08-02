@@ -2,9 +2,11 @@ import mongoose from "mongoose";
 
 import { Payment } from "../models/Payment.model.js";
 import { Invoice } from "../models/Invoice.model.js";
+import { Expense } from "../models/Expense.model.js";
+import { School } from "../models/School.model.js";
 
 /**
- * @desc    Generate comprehensive branch financial data analytics summaries
+ * @desc    Generate comprehensive branch financial summaries (Including Net Profit & Expense isolation)
  * @route   GET /api/financial-reports/dashboard-summary
  * @access  Private (Admin & Manager only)
  */
@@ -13,138 +15,145 @@ export const getDashboardSummary = async (req, res, next) => {
     const schoolId = req.user.activeSchool;
     const { startDate, endDate } = req.query;
 
-    // Use standard mongoose casting to wrap raw strings into valid ObjectIds for the aggregation filters
     const schoolObjectId = new mongoose.Types.ObjectId(schoolId);
 
     // 1. DYNAMIC DATE RANGE FILTER SETUP
-    // If dates are provided by the frontend, map them into raw dates, else default to all time
     const dateMatch = {};
-    if (startDate) {
-      dateMatch.$gte = new Date(startDate); // Start of range (e.g., 2026-07-01T00:00:00.000Z)
-    }
+    if (startDate) dateMatch.$gte = new Date(startDate);
     if (endDate) {
-      // Set end date to the absolute end of that day (23:59:59) so it captures final day checkouts
       const end = new Date(endDate);
       end.setHours(23, 59, 59, 999);
       dateMatch.$lte = end;
     }
 
+    const hasDateFilter = startDate || endDate;
+
+    // Build specific matching constraints dictionaries for each collection type
     const paymentMatchCriteria = {
       schoolId: schoolObjectId,
       status: "SUCCESSFUL",
     };
+    if (hasDateFilter) paymentMatchCriteria.paidAt = dateMatch;
 
-    if (startDate || endDate) {
-      paymentMatchCriteria.paidAt = dateMatch;
-    }
-
-    // 2. ACCOUNTING-ACCURATE REVENUE PIPELINE (Extracts VAT cleanly)
-    const revenuePipeline = await Payment.aggregate([
-      { $match: paymentMatchCriteria },
-      // Join with the Invoices collection to read the subTotal and tax breakdowns
-      {
-        $lookup: {
-          from: "invoices",
-          localField: "invoiceId",
-          foreignField: "_id",
-          as: "invoiceDetails",
-        },
-      },
-      { $unwind: "$invoiceDetails" },
-      // Dynamic Projections: Calculate exact Net Revenue and Collected VAT per payment transaction row
-      {
-        $project: {
-          amountPaid: 1,
-          // If totalAmount is 0, protect against dividing by zero crashes
-          netRevenueMultiplier: {
-            $cond: [
-              { $eq: ["$invoiceDetails.totalAmount", 0] },
-              0,
-              {
-                $divide: [
-                  "$invoiceDetails.subTotal",
-                  "$invoiceDetails.totalAmount",
-                ],
-              },
-            ],
-          },
-          taxMultiplier: {
-            $cond: [
-              { $eq: ["$invoiceDetails.totalAmount", 0] },
-              0,
-              {
-                $divide: ["$invoiceDetails.tax", "$invoiceDetails.totalAmoumt"],
-              },
-            ],
-          },
-        },
-      },
-      {
-        $project: {
-          netRevenue: { $multiply: ["$amountPaid", "$netRevenueMultiplier"] },
-          collectedVat: { $multiply: ["$amountPaid", "$taxMultiplier"] },
-        },
-      },
-      // Sum up net earnings and collected tax totals separately
-      {
-        $group: {
-          _id: null,
-          totalNetRevenue: { $sum: "$netRevenue" },
-          totalCollectedVat: { $sum: "$collectedVat" },
-        },
-      },
-    ]);
-
-    // 3. OUTSTANDING DEBT RECEIVABLES PIPELINE (Based purely on invoice subTotal to show true missing revenue)
     const invoiceMatchCriteria = {
       schoolId: schoolObjectId,
       status: { $in: ["DRAFT", "SENT", "OVERDUE"] },
     };
+    if (hasDateFilter) invoiceMatchCriteria.dueDate = dateMatch;
 
-    if (startDate || endDate) {
-      invoiceMatchCriteria.dueDate = dateMatch; // Audits debts due within this timeframe
-    }
-
-    const receivablesPipeline = await Invoice.aggregate([
-      { $match: invoiceMatchCriteria },
-      { $group: { _id: null, totalOutstandingNet: { $sum: "$subTotal" } } },
-    ]);
-
-    // 4. REVENUE STREAM SPLIT PIPELINE
     const paidInvoiceMatchCriteria = {
       schoolId: schoolObjectId,
       status: "PAID",
     };
+    if (hasDateFilter) paidInvoiceMatchCriteria.updatedAt = dateMatch;
 
-    if (startDate || endDate) {
-      // Tracks product/tuition income generated from invoices updated within this frame
-      paidInvoiceMatchCriteria.updatedAt = dateMatch;
-    }
+    const expenseMatchCriteria = { schoolId: schoolObjectId, status: "PAID" };
+    if (hasDateFilter) expenseMatchCriteria.paidAt = dateMatch;
 
-    const streamPipeline = await Invoice.aggregate([
-      { $match: paidInvoiceMatchCriteria },
-      { $unwind: "$items" }, // Flattens the array items list out into single documents for sorting
-      {
-        $group: {
-          _id: "$items.itemType",
-          streamRevenue: { $sum: "$items.totalPrice" },
-          itemCount: { $sum: "$items.quantity" },
+    // 2. FIRE ALL AGGREGATION PIPELINES SIMULTANEOUSLY FOR HIGH SPEED PERFORMANCE
+    const [
+      revenuePipeline,
+      receivablesPipeline,
+      streamPipeline,
+      expensePipeline,
+    ] = await Promise.all([
+      // A. Revenue & VAT Inflows Engine
+      Payment.aggregate([
+        { $match: paymentMatchCriteria },
+        {
+          $lookup: {
+            from: "invoices",
+            localField: "invoiceId",
+            foreignField: "_id",
+            as: "invoiceDetails",
+          },
         },
-      },
+        { $unwind: "$invoiceDetails" },
+        {
+          $project: {
+            amountPaid: 1,
+            netRevenueMultiplier: {
+              $cond: [
+                { $eq: ["$invoiceDetails.totalAmount", 0] },
+                0,
+                {
+                  $divide: [
+                    "$invoiceDetails.subTotal",
+                    "$invoiceDetails.totalAmount",
+                  ],
+                },
+              ],
+            },
+            taxMultiplier: {
+              $cond: [
+                { $eq: ["$invoiceDetails.totalAmount", 0] },
+                0,
+                {
+                  $divide: [
+                    "$invoiceDetails.tax",
+                    "$invoiceDetails.totalAmount",
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        {
+          $project: {
+            netRevenue: {
+              $multiply: ["$amountPaid", "$netRevenueMultiplier"],
+            },
+            collectedVat: { $multiply: ["$amountPaid", "$taxMultiplier"] },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalNetRevenue: { $sum: "$netRevenue" },
+            totalCollectedVat: { $sum: "$collectedVat" },
+          },
+        },
+      ]),
+
+      // B. Receivables Engine (Outstanding Untaxed Debts)
+      Invoice.aggregate([
+        { $match: invoiceMatchCriteria },
+        { $group: { _id: null, totalOutstandingNet: { $sum: "$subTotal" } } },
+      ]),
+
+      // C. Revenue Stream Sorter Engine
+      Invoice.aggregate([
+        { $match: paidInvoiceMatchCriteria },
+        { $unwind: "$items" },
+        {
+          $group: {
+            _id: "$items.itemType",
+            streamRevenue: { $sum: "$items.totalPrice" },
+          },
+        },
+      ]),
+
+      // D. NEW EXPENSES ENGREEMENT ENGINE (Aggregates pre-tax subTotal outflows)
+      Expense.aggregate([
+        { $match: expenseMatchCriteria },
+        { $group: { _id: null, totalOutFlows: { $sum: "$subTotal" } } },
+      ]),
     ]);
 
-    // Extract calculated values with clean fallback boundaries
+    // 3. SECURELY EXTRACT VALUES WITH CLEAN FALLBACK BOUNDARIES
     const cleanRevenueData = revenuePipeline[0] || {
       totalNetRevenue: 0,
       totalCollectedVat: 0,
     };
     const totalOutstanding = receivablesPipeline[0]?.totalOutstandingNet || 0;
+    const totalExpenses = expensePipeline[0]?.totalOutFlows || 0;
 
-    const streamReport = {
-      tuitionRevenue: 0,
-      retailRevenue: 0,
-    };
+    // 4. COMPUTE NET PROFIT METRICS
+    // Net Profit = (True Income Generated) - (True Expenses Incurred)
+    const netSchoolProfit = cleanRevenueData.totalNetRevenue - totalExpenses;
 
+    // 5. MAP REVENUE STREAMS
+    const streamReport = { tuitionRevenue: 0, retailRevenue: 0 };
     streamPipeline.forEach((stream) => {
       if (stream._id === "STUDENT_TRACK")
         streamReport.tuitionRevenue = stream.streamRevenue;
@@ -152,25 +161,30 @@ export const getDashboardSummary = async (req, res, next) => {
         streamReport.retailRevenue = stream.streamRevenue;
     });
 
+    // 6. OUTPUT COMPREHENSIVE TAX-ISOLATED DATA MAP RESPONSE
     return res.status(200).json({
       success: true,
       message:
-        "Tax-isolated financial metrics compiled / โหลดข้อมูลสรุปการเงิน-แยกภาษีมูลค่าเพิ่มสำเร็จ",
+        "Branch P&L financial summary dashboard compiled / สรุปงบกำไร-ขาดทุนของโรงเรียน-สาขาสำเร็จ",
       data: {
         timeframe: {
           startDate: startDate || "All time",
           endDate: endDate || "All time",
         },
-        totalNetRevenue:
-          Math.round(cleanRevenueData.totalNetRevenue * 100) / 100,
-        totalCollectedVat:
-          Math.round(cleanRevenueData.totalCollectedVat * 100) / 100,
-        totalOutstandingReceivables: Math.round(totalOutstanding * 100) / 100,
+        financials: {
+          grossRevenue:
+            Math.round(cleanRevenueData.totalNetRevenue * 100) / 100,
+          totalExpense: Math.round(totalExpenses * 100) / 100,
+          netProfit: Math.round(netSchoolProfit * 100) / 100,
+          collectedVatLiability:
+            Math.round(cleanRevenueData.totalCollectedVat * 100) / 100,
+          outstandingReceivables: Math.round(totalOutstanding * 100) / 100,
+        },
         revenueStreams: streamReport,
       },
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
 
@@ -375,5 +389,234 @@ export const getOverdueInvoicesReport = async (req, res, next) => {
     });
   } catch (error) {
     return next(error);
+  }
+};
+
+/**
+ * @desc    Compile Input Tax Report data for Thai Revenue Dept (รายงานภาษีซื้อ)
+ * @route   GET /api/financial-reports/thai-input-tax
+ * @access  Private (Admin & Manager only)
+ */
+export const getThaiInputTaxReport = async (req, res, next) => {
+  try {
+    const schoolId = req.user.activeSchool;
+    const { year, month } = req.query; // Expecting parameters like ?year=2026&month=07
+
+    if (!year || !month) {
+      res.status(400);
+      throw new Error(
+        "Please specify accounting year and month / โปรดระบุเดือน-ปีสำหรับรายงานภาษีซื้อ",
+      );
+    }
+
+    // Configure dates to filter exactly for the target month (e.g., July 1st to July 31st)
+    const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+    const endDate = new Date(
+      parseInt(year),
+      parseInt(month),
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
+
+    // Fetch settled expenses that carry tax lines within this target month
+    const paidExpenses = await Expense.find({
+      schoolId,
+      status: "PAID",
+      paidAt: { $gte: startDate, $lte: endDate },
+      taxAmount: { $gt: 0 }, // Only pick rows that contain input taxes
+    })
+      .populate("payeeSupplierId", "supplierName taxId address")
+      .populate("payeeUserId", "name taxId address")
+      .sort({ paidAt: 1 })
+      .lean();
+
+    // Map records directly to match the report columns layout
+    const formattedRecords = paidExpenses.map((exp, idx) => {
+      const payeeName =
+        exp.payeeSupplierId?.supplierName || exp.payeeUserId?.name;
+      const payeeTaxId =
+        exp.payeeSupplierId?.taxId || exp.payeeUserId?.taxId || "-";
+
+      return {
+        index: idx + 1,
+        date: exp.paidAt,
+        documentNumber: exp.transactionReference || exp.expenseNumber, // Tax Invoice invoice number column
+        payeeName: payeeName?.th || payeeName?.en || "-",
+        taxId: payeeTaxId,
+        branch: "สำนักงานใหญ่", // Default corporate fallback descriptor
+        subTotal: exp.subTotal,
+        vatAmount: exp.taxAmount,
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Input tax report compiled / ออกรายงานภาษีซื้อสำเร็จ",
+      data: formattedRecords,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Compile Output Tax Report data for Thai Revenue Dept (รายงานภาษีขาย)
+ * @route   GET /api/financial-reports/thai-output-tax
+ * @access  Private (Admin & Manager only)
+ */
+export const getThaiOutputTaxReport = async (req, res, next) => {
+  try {
+    const schoolId = req.user.activeSchool;
+    const { year, month } = req.query;
+
+    if (!year || !month) {
+      res.status(400);
+      throw new Error(
+        "Please specify accounting year and month / กรุณาระบุเดือน-ปี สำหรับรายงานภาษีขาย",
+      );
+    }
+
+    const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+    const endDate = new Date(
+      parseInt(year),
+      parseInt(month),
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
+
+    // Fetch invoices settled as PAID within this targeted month window
+    const paidInvoices = await Invoice.find({
+      schoolId,
+      status: "PAID",
+      updatedAt: { $gte: startDate, $lte: endDate },
+      tax: { $gte: 0 }, // Only grab items carrying active output VAT
+    })
+      .populate("userId", "name taxId")
+      .sort({ updatedAt: 1 })
+      .lean();
+
+    // Map records to match the report columns layout
+    const formattedRecords = paidInvoices.map((inv, idx) => {
+      return {
+        index: idx + 1,
+        date: inv.updatedAt,
+        invoiceNumber: inv.invoiceNumber,
+        customerName:
+          inv.userId?.name?.th || inv.userId?.name?.en || "ลูกค้าปลีก",
+        taxId: inv.userId?.taxId || "-",
+        branch: "สำนักงานใหญ่",
+        subTotal: inv.subTotal,
+        taxAmount: inv.tax,
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Thai output tax report compiled / ออกรายงานภาษีขายสำเร็จ",
+      data: formattedRecords,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Compile specific Expense voucher data to populate a Thai 50 ทวิ Withholding Tax Certificate, รับรองภาษีหัก ณ ที่จ่าย
+ * @route   GET /api/financial-reports/withholding-tax-certificate/:expenseId
+ * @access  Private (Admin & Manager only)
+ */
+export const getThaiWithholdingTaxCertificate = async (req, res, next) => {
+  try {
+    const { expenseId } = req.params;
+
+    // 1. Fetch the targeted expense document and expand payee details
+    const expense = await Expense.findById(expenseId)
+      .populate("payeeSupplierId", "supplierName taxId address phoneNumber")
+      .populate("payeeUserId", "name taxId address phoneNumber")
+      .populate("schoolId", "schoolName taxId address email phoneNumber")
+      .lean();
+
+    if (!expense) {
+      res.status(404);
+      throw new Error("Expense record not found / ไม่พบรายการจ่ายในระบบ");
+    }
+
+    // Security & Business Validation: Ensure it has an actual withholding tax line item recorded
+    if (expense.taxAmount <= 0) {
+      res.status(400);
+      throw new Error(
+        "This expense does not contain a withholding tax line / รายการจ่ายนี้ไม่ได้บันทึกภาษีหัก ณ ที่จ่าย",
+      );
+    }
+
+    // 2. Identify the Payee (ผู้ถูกหักภาษี ณ ที่จ่าย)
+    const payeeName =
+      expense.payeeSupplierId?.supplierName || expense.payeeUserId?.name;
+    const payeeTaxId =
+      expense.payeeSupplierId?.taxId || expense.payeeUserId?.taxId || "-";
+    const payeeAddress =
+      expense.payeeSupplierId?.address || expense.payeeUserId?.address || "-";
+
+    // 3. Map out the Thai Revenue Department Tax Category Code Classification Row (ประเภทเงินได้)
+    let taxCategoryThaiText = "ค่าบริการ / ค่าจ้าง";
+    let taxCategoryEnglishText = "Service Fee / Hired Labor";
+
+    if (expense.expenseCategory === "TEACHER_FEE") {
+      taxCategoryThaiText = "ค่าสอน / ค่าวิชาชีพอิสระ (มาตรา 40(6))";
+      taxCategoryEnglishText = "Teaching Fee / Professional Fee";
+    } else if (expense.expenseCategory === "SALARY") {
+      taxCategoryThaiText = "เงินเดือน / ค่าจ้าง (มาตรา 40(1))";
+      taxCategoryEnglishText = "Salary / Wages";
+    }
+
+    // 4. Formulate the comprehensive 50 ทวิ document payload response mapping
+    const certificateData = {
+      // SECTION 1: Payer Details (ผู้มีหน้าที่หักภาษี ณ ที่จ่าย - Your School Branch)
+      payer: {
+        schoolName: expense.schoolId?.schoolName || "-",
+        taxId: expense.schoolId?.taxId || "-",
+        address: expense.schoolId?.address || "-",
+      },
+
+      // SECTION 2: Payee Details (ผู้ถูกหักภาษี ณ ที่จ่าย - Teacher or Technician Contractor)
+      payee: {
+        name: payeeName?.th || payeeName?.en || "-",
+        taxId: payeeTaxId,
+        address: payeeAddress?.th || payeeAddress?.en || payeeAddress || "-",
+      },
+
+      // SECTION 3: Transaction Details (รายการจ่ายเงินและภาษีที่หักไว้)
+      transaction: {
+        expenseNumber: expense.expenseNumber,
+        paymentDate: expense.paidAt || expense.updatedAt,
+        incomeType: {
+          th: taxCategoryThaiText,
+          en: taxCategoryEnglishText,
+        },
+        amountPaid: expense.subTotal, // Base taxable income column
+        withholdingTaxAmount: expense.taxAmount, // Amount of tax deducted and held
+        taxRatePercent: Math.round(
+          (expense.taxAmount / expense.subTotal) * 100,
+        ), // Dynamically computes tax rate (e.g., 3%)
+      },
+
+      // SECTION 4: Sign-off Defaults Checklist
+      payoutMethodDescriptor: expense.paymentMethod || "BANK_TRANSFER",
+    };
+
+    return res.status(200).json({
+      success: true,
+      message:
+        "Thai Withholding Tax Certificate (50 ทวิ) compiled / ออกใบรับรองหักภาษี ณ ที่จ่าย (50 ทวิ) สำเร็จ",
+      data: certificateData,
+    });
+  } catch (error) {
+    next(error);
   }
 };
