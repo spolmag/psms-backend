@@ -1,6 +1,7 @@
 import { Payment } from "../models/Payment.model.js";
 import { Invoice } from "../models/Invoice.model.js";
 import { manageStockReservationService } from "../sevices/Invoice.service.js";
+import { stripe } from "../config/stripe.js";
 
 /**
  * @desc    Record a new transaction payment entry against an invoice
@@ -99,6 +100,72 @@ export const getPayments = async (req, res, next) => {
         currentPage: parseInt(page),
         totalPages: Math.ceil(totalRecords / dataLimit),
         limit: dataLimit,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Create a secure Stripe Payment Intent for Credit Card or PromptPay checkouts
+ * @route   POST /api/payments/create-intent
+ * @access  Private (Registered User/Student/Parent)
+ */
+export const createStripePaymentIntent = async (req, res, next) => {
+  try {
+    const { invoiceId, paymentMethodType = "card" } = req.body; // paymentMethodType can be 'card' or 'promptpay'
+
+    // 1. Fetch the invoice from database to verify the correct amount due
+    const invoice = await Invoice.findById(invoiceId);
+    if (!invoice) {
+      res.status(404);
+      throw new Error("Target invoice not found / ไม่พบข้อมูลอินวอยซ์");
+    }
+
+    // Security Gate: Prevent double-payments
+    if (invoice.status === "PAID") {
+      res.status(400);
+      throw new Error(
+        "This invoice has already been settled / อินวอยซ์นี้มีการชำระเงินแล้ว",
+      );
+    }
+
+    // 2. CONVERT THE AMOUNT PAYABLE TO STRIPE'S STANDARDS
+    // Stripe requires all values to be passed as the smallest currency unit (Integers / Satangs for THB)
+    // Example: 150.50 THB must be passed to Stripe as 15050 satangs.
+    const amountInSatangs = Math.round(invoice.totalAmount * 100);
+
+    if (amountInSatangs <= 0) {
+      res.status(400);
+      throw new Error(
+        "Invoice total must be greater than zero / ยอดชำระจะต้องมากกว่า 0 บาท",
+      );
+    }
+
+    // 3. REQUEST AN OFFICIAL PAYMENT INTENT FROM STRIPE
+    // We pass dynamic metadata so our server can link the successful transaction back to this invoice later.
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amountInSatangs,
+      currency: "thb",
+      payment_method_types: [paymentMethodType], // Dynamically handles ['card'] or ['promptpay']
+      metadata: {
+        invoiceId: invoice._id.toString(),
+        schoolId: invoice.schoolId.toString(),
+        userId: req.user._id.toString(), // Logs staff who executing the transaction
+      },
+    });
+
+    // 4. RETURN THE CRITICAL CLIENT_SECRET KEY TO YOUR FRONTEND
+    return res.status(200).json({
+      success: true,
+      message:
+        "Stripe payment intent established / สร้างเซซชั่นชำระเงิน Stripe สำเร็จ",
+      data: {
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id,
+        amount: invoice.totalAmount,
+        currency: "thb",
       },
     });
   } catch (error) {
