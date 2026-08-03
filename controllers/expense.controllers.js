@@ -6,7 +6,7 @@ import {
   approveExpenseService,
   payExpenseService,
   voidExpenseService,
-} from "../sevices/Expense.service.js";
+} from "../services/Expense.service.js";
 
 /**
  * @desc    Log a new school expense bill invoice entry

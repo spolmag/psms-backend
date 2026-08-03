@@ -3,7 +3,7 @@ import {
   requestTransferService,
   completeTransferService,
   cancelTransferService,
-} from "../sevices/StockTransfer.service.js";
+} from "../services/StockTransfer.service.js";
 
 export const createTransferRequest = async (req, res, next) => {
   try {

@@ -3,7 +3,7 @@ import {
   updateInvoiceService,
   deleteInvoiceService,
   getInvoicesService,
-} from "../sevices/Invoice.service.js";
+} from "../services/Invoice.service.js";
 
 /**
  * @desc    Create a new invoice with automated item-level VAT calculations

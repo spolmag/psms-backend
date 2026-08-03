@@ -4,7 +4,7 @@ import {
   cancelPurchaseOrderService,
   getPurchaseOrdersService,
   getPurchaseOrderByIdService,
-} from "../sevices/PurchaseOrder.service.js";
+} from "../services/PurchaseOrder.service.js";
 
 /**
  * @desc    Open a new corporate purchase order tracking ticket

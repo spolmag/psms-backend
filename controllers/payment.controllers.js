@@ -1,6 +1,6 @@
 import { Payment } from "../models/Payment.model.js";
 import { Invoice } from "../models/Invoice.model.js";
-import { manageStockReservationService } from "../sevices/Invoice.service.js";
+import { manageStockReservationService } from "../services/Invoice.service.js";
 import { stripe } from "../config/stripe.js";
 
 /**
