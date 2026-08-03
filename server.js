@@ -1,10 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import helmet from "helmet";
 
 import { connectDB } from "./config/db.js";
 import { notFound } from "./middleware/notFoundMiddleware.js";
 import { errorHandler } from "./middleware/errorMiddleware.js";
+import { generalApiLimiter } from "./middleware/rateLimitMiddleware.js";
+
 import { router as webHookRoutes } from "./routes/webhook.routes.js";
 import { router as paymentRoutes } from "./routes/payment.routes.js";
 import { router as schoolRoutes } from "./routes/school.routes.js";
@@ -29,12 +32,24 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+// 🛡️ SECURITY LAYER 1: Global HTTP header hardening
+app.use(helmet());
 app.use(cors());
+
+// 💳 WEBHOOK LAYER: Kept clean and raw above body parsers
+// (Stripe pings are skipped from the limiter to ensure heavy event bursts process safely without dropping drops)
 app.use("/api/webhooks", webHookRoutes);
+
+// ⚙️ STANDARD APPS MIDDLEWARES PARSERS
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 🛡️ APPLY API RATE LIMITER TO STANDARD FUNCTION ROUTES
+app.use("/api/auth", generalApiLimiter, authRoutes);
+
+// 💼 API SYSTEM ROUTING PATHWAY MANIFESTS
 app.use("/api/schools", schoolRoutes);
-app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/course-categories", courseCategoryRoutes);
 app.use("/api/users", userRoutes);
