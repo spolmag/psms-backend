@@ -1,3 +1,12 @@
+### User login
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "spolmag@gmail.com",
+  "password": "mrkratai"
+}
+
 ### Register Manager: Suttipong Polmag (Sukhumvit Branch)
 POST http://localhost:5000/api/auth/register
 Content-Type: application/json
@@ -15,7 +24,15 @@ Content-Type: application/json
   "dateOfBirth": "1988-11-23"
 }
 
-###
+### User change password
+put http://localhost:5000/api/users/change-password
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NTk5MDU5NH0.2g7LslCO9Mgc8u6o-xC8nZX4tzu0QTcV6W4U20xxZUk
+
+{
+  "currentPassword": "password1234",
+  "newPassword": "mrkratai"
+}
 
 ### Register Admin 1: Nattaporn Somdee (Sukhumvit HQ)
 POST http://localhost:5000/api/auth/register
@@ -307,19 +324,19 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyY
 ### Switch branch (User must have more than 1 school in schools key in user document)
 PATCH http://localhost:5000/api/auth/switch-branch
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDkwOGEyYzBlZGI3MmQwMjJlMDQxOSIsImlhdCI6MTc4MzM0MjE2M30.Nxj6ZxlzoK0MyhCNo_58uJMBUujDQubS41EfdP1unyo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NjAwMzE3MX0.Z8qfMgvfTmQaJWqrqex2yVorP6B10I_rh_rE-M3Ky8g
 
 {
-  "schoolId": "6a4b9e674dd915784e7cf926"
+  "schoolId": "6a7427681ffc999e4d396e21"
 }
 
 ### Admin add new branch for "teacher" role user. *Need logon as admin to get permission
-PATCH http://localhost:5000/api/users/6a4908a2c0edb72d022e0419/add-branch
+PATCH http://localhost:5000/api/users/6a563bed27e89c61dbe3e851/add-branch
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNGJhYzE1YzdlZDZkOTExN2M4NTc1MSIsImlhdCI6MTc4MzM0NTA1Mn0.KmL6hs2jm8qcYk-rIp_QdMZynHoMiIXCFaFIOOgmUR0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNTYzYmVkMjdlODljNjFkYmUzZTg1MSIsImlhdCI6MTc4NjAwMzE3MX0.Z8qfMgvfTmQaJWqrqex2yVorP6B10I_rh_rE-M3Ky8g
 
 {
-  "schoolId": "6a4b9e674dd915784e7cf926"
+  "schoolId": "6a7427681ffc999e4d396e21"
 }
 
 ### Upgrade Track for Student 1: Somchai Kengkla (Piano Level 2)

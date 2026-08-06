@@ -42,6 +42,28 @@ export const registerSchool = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get all school branches (Active catalog list registry)
+ * @route   GET /api/schools
+ * @access  Private (Authenticated users / Shared lookups)
+ */
+export const getSchools = async (req, res, next) => {
+  try {
+    // Fetch all active schools sorted by their creation order (Oldest first)
+    const schools = await School.find({ isActive: true }).sort({
+      createdAt: 1,
+    });
+
+    return res.status(200).json({
+      success: true,
+      count: schools.length,
+      data: schools, // Exactly matches the response.data.data array frontend expects!
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getSchoolById = async (req, res, next) => {
   try {
     const school = await School.findById(req.params.id);

@@ -3,11 +3,13 @@ import {
   addBranchToUser,
   getUserProfileById,
   updateStudentAcademicProfile,
+  changePassword,
 } from "../controllers/user.controllers.js";
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 export const router = Router();
 
+router.put("/change-password", protect, changePassword);
 router.get("/:id", protect, restrictTo("admin", "manager"), getUserProfileById);
 router.patch(
   "/:id/add-branch",

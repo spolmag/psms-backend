@@ -135,3 +135,58 @@ export const updateStudentAcademicProfile = async (req, res, next) => {
     return next(error);
   }
 };
+
+/**
+ * @desc    Change logged-in user's password securely
+ * @route   PUT /api/users/change-password
+ * @access  Private (Any authenticated user)
+ */
+export const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user._id; // Extracted safely from protect authentication middleware
+
+    // 1. Validation: Ensure both input string parameters are provided
+    if (!currentPassword || !newPassword) {
+      res.status(400);
+      throw new Error(
+        "Please fill in all password fields / กรุณากรอกรหัสผ่านเดิมและรหัสผ่านใหม่ให้ครบถ้วน",
+      );
+    }
+
+    // 2. Fetch the user manually and include the password field layout explicitly
+    // (Since user schema soft-hides the password key via select: false by default)
+    const user = await User.findById(userId).select("+password");
+    if (!user) {
+      res.status(404);
+      throw new Error("User not found / ไม่พบข้อมูลผู้ใช้งานในระบบ");
+    }
+
+    // 3. Security Gate 1: Check if the current password is valid
+    const isMatch = await user.matchPassword(currentPassword);
+    if (!isMatch) {
+      res.status(401);
+      throw new Error("Current password is incorrect / รหัสผ่านเดิมไม่ถูกต้อง");
+    }
+
+    // 4. Security Gate 2: Prevent users from re-submitting their current password
+    const isSamePassword = await user.matchPassword(newPassword);
+    if (isSamePassword) {
+      res.status(400);
+      throw new Error(
+        "New password cannot identical to current password / รหัสผ่านใหม่จะต้องไม่เหมือนกับรหัสผ่านเดิม",
+      );
+    }
+
+    // 5. Update and Save: Trigger the pre-save bcrypt encryption hooks automatically
+    user.password = newPassword;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successfully / เปลี่ยนรหัสผ่านใหม่แล้ว",
+    });
+  } catch (error) {
+    return next(error);
+  }
+};

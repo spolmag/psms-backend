@@ -13,7 +13,7 @@ const schoolSchema = new mongoose.Schema(
       type: String,
       required: [true, "School type, ประเภทโรงเรียน"],
       enum: {
-        values: ["music", "language", "computer", "generic"],
+        values: ["music", "language", "computer", "tutor", "generic"],
         message: "{VALUE} is not a valid School type!",
       },
       default: "music",
@@ -37,7 +37,7 @@ const schoolSchema = new mongoose.Schema(
       timeZone: { type: String, default: "Asia/Bangkok" },
       isVatEnabled: {
         type: Boolean,
-        default: false,
+        default: true,
       },
       vatRate: {
         type: Number,
